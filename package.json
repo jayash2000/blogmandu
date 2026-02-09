@@ -15,6 +15,8 @@
     "@pinia/nuxt": "^0.11.3",
     "@shikijs/markdown-it": "^3.22.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/vue-table": "^8.21.3",
+    "@tiptap/extension-code": "^3.19.0",
     "@tiptap/markdown": "^3.19.0",
     "@tiptap/pm": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",

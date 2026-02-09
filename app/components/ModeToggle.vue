@@ -4,19 +4,21 @@
     class="w-fit mx-auto rounded-full"
     @click="toggleTheme"
   >
-    <Icon
-      icon="radix-icons:moon"
-      :class="{
-        hidden: colorMode.value === 'dark',
-      }"
-    ></Icon>
+    <ClientOnly>
+      <Icon
+        icon="radix-icons:moon"
+        :class="{
+          hidden: colorMode.value === 'dark',
+        }"
+      ></Icon>
 
-    <Icon
-      icon="radix-icons:sun"
-      :class="{
-        hidden: colorMode.value === 'light',
-      }"
-    ></Icon>
+      <Icon
+        icon="radix-icons:sun"
+        :class="{
+          hidden: colorMode.value === 'light',
+        }"
+      ></Icon>
+    </ClientOnly>
     <span class="sr-only">Toggle theme</span>
   </Button>
 </template>

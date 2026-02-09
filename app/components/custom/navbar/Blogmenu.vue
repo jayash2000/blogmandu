@@ -3,13 +3,19 @@
     class="bg-background w-full z-50 flex items-center justify-between px-6 py-4 border-b-2 border-border dark:border-none"
     :class="{
       'border-none': auth.user?.role === 'admin',
+      'justify-end': ['/u/dashboard', '/admin/dashboard'].includes(route.path),
     }"
   >
-    <h1 class="font-bold text-3xl dark:text-blue-200">
+    <h1
+      class="font-bold text-3xl dark:text-blue-200"
+      v-if="!['/u/dashboard', '/admin/dashboard'].includes(route.path)"
+    >
       <span class="text-primary">blog</span>mandu
     </h1>
 
-    <NavigationMenu v-if="auth.user?.role !== 'admin'">
+    <NavigationMenu
+      v-if="auth.user?.role !== 'admin' && route.path !== '/u/dashboard'"
+    >
       <NavigationMenuList class="space-x-8">
         <NavigationMenuItem
           v-for="item in NAVLINKS"
@@ -27,6 +33,15 @@
     </NavigationMenu>
 
     <section class="flex gap-4 items-center">
+      <Button
+        class="flex"
+        v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
+        @click="navigateTo('/u/post/create')"
+      >
+        <span> Create Post </span>
+        <Plus class="text-xs mb-0.5" />
+      </Button>
+
       <Input
         type="text"
         placeholder="Search posts..."
@@ -70,10 +85,26 @@
           <Separator class="my-1" />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem @click="() => navigateTo('/profile')">
+            <DropdownMenuItem
+              @click="() => navigateTo(`/profile/${auth.user?.id}`)"
+            >
               My Account
             </DropdownMenuItem>
-            <DropdownMenuItem @click="">Settings</DropdownMenuItem>
+
+            <DropdownMenuItem
+              @click="
+                () =>
+                  navigateTo('/u/dashboard', {
+                    external: true,
+                    open: {
+                      target: '_blank',
+                    },
+                  })
+              "
+            >
+              Author Console
+            </DropdownMenuItem>
+
             <DropdownMenuItem @click="handleLogout">Logout</DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
@@ -83,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import ModeToggle from "~/components/ModeToggle.vue";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
@@ -95,6 +127,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+} from "~/components/ui/navigation-menu";
 import { Separator } from "~/components/ui/separator";
 
 const auth = useAuthStore();

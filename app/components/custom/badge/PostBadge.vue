@@ -17,14 +17,14 @@
         id === 'health',
     }"
   >
-    {{ props.id }}
+    {{ id }}
   </Badge>
 </template>
 
 <script setup lang="ts">
 import { Badge } from "~/components/ui/badge";
 
-const props = defineProps<{
+defineProps<{
   id:
     | "technology"
     | "lifestyle"

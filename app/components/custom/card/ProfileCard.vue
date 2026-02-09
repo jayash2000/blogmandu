@@ -16,10 +16,19 @@
         industry professionals and aspiring developers alike.
       </p>
 
-      <Button class="p-3 cursor-pointer text-sm">
-        <Icon name="uil:plus" />
-        Follow
-      </Button>
+      <section class="flex items-center gap-4">
+        <Button class="p-3 cursor-pointer text-sm">
+          <Icon name="uil:plus" />
+          Follow
+        </Button>
+
+        <Button
+          v-if="auth.isAuthenticated && route.params.id === auth.user?.id"
+          variant="outline"
+        >
+          Edit Profile
+        </Button>
+      </section>
 
       <ul class="flex items-center gap-4 pt-4">
         <NuxtLink :to="link.href" v-for="link in PROFILE_LINKS" :key="link.id">
@@ -36,4 +45,8 @@
 
 <script setup lang="ts">
 import H1 from "~/components/custom/headings/H1.vue";
+
+const auth = useAuthStore();
+
+const route = useRoute();
 </script>

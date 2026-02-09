@@ -1,6 +1,6 @@
 <template>
   <section class="h-full py-4 px-8 flex flex-col gap-8">
-    <H1 title="Create New Post" class="text-3xl" />
+    <H1 title="Edit Post" class="text-3xl" />
 
     <form @submit.prevent="handleSubmit" class="w-full">
       <section class="flex items-start justify-between gap-8">
@@ -21,17 +21,7 @@
               </Field>
 
               <Field>
-                <FieldLabel for="slug">Slug</FieldLabel>
-                <Input
-                  type="text"
-                  class="focus:ring-1!"
-                  v-model="slug"
-                  disabled
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel>Content</FieldLabel>
+                <FieldLabel for="title">Content</FieldLabel>
 
                 <section
                   class="grid items-end gap-4"
@@ -170,12 +160,8 @@
           </Card>
 
           <Button type="submit" class="flex items-center gap-1 cursor-pointer">
-            <div v-if="!post.loading">
-              Publish Post
-              <Icon name="uil:message" />
-            </div>
-
-            <Loader2Icon v-else class="animate-spin" />
+            Edit Post
+            <Icon name="uil:edit" class="text-base" />
           </Button>
 
           <!-- <Button
@@ -200,15 +186,12 @@
 </template>
 
 <script setup lang="ts">
-import { Loader2Icon } from "lucide-vue-next";
-import slugify from "slugify";
-import { toast } from "vue-sonner";
 import TiptapEditor from "~/components/custom/editor/TiptapEditor.vue";
 import H1 from "~/components/custom/headings/H1.vue";
 import PostContentTabs from "~/components/custom/tabs/PostContentTabs.vue";
 import { Item, ItemActions } from "~/components/ui/item";
 
-const createPostForm = reactive<{ [k: string]: string }>({
+const createPostForm = reactive({
   title: "",
   contentEditor: "",
   contentMarkdown: "",
@@ -229,52 +212,17 @@ const openFileDialog = () => {
 };
 
 const auth = useAuthStore();
-const post = usePostStore();
-
-const handleSubmit = async () => {
-  // console.log(createPostForm);
-  await post.createPost(
-    createPostForm.title!,
-    createPostForm.contentEditor! || createPostForm.contentMarkdown!,
-  );
-
-  if (post.error) {
-    toast.error(post.error, {
-      class:
-        "bg-destructive text-white p-4 rounded-sm w-fit flex items-center absolute bottom-4 right-4 gap-2 text-sm",
-      duration: 2000,
-    });
-
-    return;
-  }
-
-  toast.success(post.data.message, {
-    class:
-      "bg-green-500 text-white p-4 rounded-sm w-fit flex items-center absolute bottom-4 right-4 gap-2 text-sm z-50",
-    duration: 2000,
-  });
-
-  createPostForm.title = "";
-  createPostForm.contentEditor = "";
-  createPostForm.contentMarkdown = "";
-  createPostForm.categories = "";
-  createPostForm.image = "";
-  createPostForm.status = "";
-  createPostForm.visibility = "";
-
-  return navigateTo("/");
-};
-
-const slug = computed(() => {
-  return slugify(createPostForm.title!, { lower: true, strict: true });
-});
 
 watch(
   () => createPostForm.contentMarkdown,
   async (value) => {
     console.log(mdActive, "active");
 
-    preview.value = await parseMarkdownClient(value!);
+    preview.value = await parseMarkdownClient(value);
   },
 );
+
+const handleSubmit = () => {
+  console.log(createPostForm);
+};
 </script>

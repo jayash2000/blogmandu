@@ -1,15 +1,15 @@
 <template>
-  <Admin>
-    <section v-for="item in SIDEBAR_MENU_ITEMS" :key="item.id">
+  <Dashboard :menus="SIDEBAR_MENU_ITEMS_ADMIN">
+    <section v-for="item in SIDEBAR_MENU_ITEMS_ADMIN" :key="item.id">
       <span v-if="item.id === activeTab">
         {{ item.title }}
       </span>
     </section>
-  </Admin>
+  </Dashboard>
 </template>
 
 <script setup lang="ts">
-import Admin from "~/components/custom/layout/Admin.vue";
+import Dashboard from "~/components/custom/layout/Dashboard.vue";
 
 const activeTab = useState<string>("dashboard");
 </script>

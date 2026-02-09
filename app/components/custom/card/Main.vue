@@ -13,12 +13,12 @@
     <CardContent class="flex flex-col justify-between gap-4">
       <PostBadge id="technology" />
 
-      <h2 class="font-semibold">The Future of AI in Content Creation</h2>
+      <h2 class="font-semibold">{{ post.title }}</h2>
 
-      <p class="line-clamp-3 text-justify text-sm">
-        Artificial intelligence is rapidly transforming the landscape of content
-        creation, offering innovative tools for writers, designers, and
-      </p>
+      <p
+        class="prose line-clamp-3 text-justify text-sm"
+        v-html="post.description"
+      ></p>
     </CardContent>
   </Card>
 </template>
@@ -26,4 +26,8 @@
 <script setup lang="ts">
 import { Badge } from "~/components/ui/badge";
 import PostBadge from "../badge/PostBadge.vue";
+
+defineProps<{
+  post: Record<string, string>;
+}>();
 </script>

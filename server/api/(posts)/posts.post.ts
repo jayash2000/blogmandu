@@ -27,6 +27,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const { title, content } = result.data;
+    // const { title, content } = await readBody(event);
 
     const slug = slugify(title, { lower: true, strict: true });
 

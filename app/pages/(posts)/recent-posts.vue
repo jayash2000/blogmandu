@@ -52,8 +52,14 @@
       </section>
     </section>
 
+    <span v-if="post.loading">Loading...</span>
+
     <section class="grid grid-cols-4 gap-8 w-full px-4">
-      <Main v-for="value in [1, 2, 3, 4, 5]" :key="value" />
+      <Main
+        v-for="value in post.posts.data"
+        :key="value.id as PropertyKey"
+        :post="value"
+      />
     </section>
 
     <Button class="cursor-pointer">
@@ -64,8 +70,25 @@
 </template>
 
 <script setup lang="ts">
+import { useMounted } from "@vueuse/core";
 import Main from "~/components/custom/card/Main.vue";
 import H1 from "~/components/custom/headings/H1.vue";
 
 const activeFilter = ref("all");
+
+const route = useRoute();
+const post = usePostStore();
+
+const loadPosts = async () => {
+  await post.fetchPostByOffset({
+    limit: 12,
+  });
+};
+
+await loadPosts();
+
+watch(() => route.query || route.path || post.posts.data, loadPosts, {
+  deep: true,
+});
+console.log(post.posts, "post");
 </script>

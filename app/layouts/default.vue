@@ -8,6 +8,7 @@
         '/register',
         '/forgot-password',
         '/reset-password',
+        '/admin/login',
       ].includes(route.path),
     }"
   >
@@ -19,12 +20,20 @@
             '/register',
             '/forgot-password',
             '/reset-password',
+            '/admin/login',
+            '/u/dashboard',
+            '/admin/dashboard',
           ].includes(route.path)
         "
       />
     </header>
 
-    <main class="min-h-[80vh] py-2 px-6">
+    <main
+      class="min-h-[80vh] py-2 px-6"
+      :class="{
+        'py-0!': route.path === '/u/dashboard',
+      }"
+    >
       <slot />
     </main>
 
@@ -35,6 +44,8 @@
           '/register',
           '/forgot-password',
           '/reset-password',
+          '/u/dashboard',
+          '/admin/login',
         ].includes(route.path) && auth.user?.role !== 'admin'
       "
       class="bg-muted border-t-2 border-border text-muted-foreground text-sm flex justify-between items-center py-6 px-6"

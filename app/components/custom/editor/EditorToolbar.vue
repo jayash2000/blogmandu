@@ -6,16 +6,28 @@
         :key="btn.id"
         size="sm"
         variant="outline"
+        type="button"
         class="cursor-pointer"
         @click="
-          isActive = !isActive;
+          activeBtn.includes(btn.id)
+            ? activeBtn.length >= 2
+              ? activeBtn.splice(
+                  activeBtn.findIndex((b) => b === btn.id),
+                  1,
+                )
+              : activeBtn.pop()
+            : activeBtn.push(btn.id);
           handleButtonClick(btn.id);
         "
         :class="{
-          'bg-primary! text-white!': activeBtn === btn.id && isActive,
+          'bg-primary! text-white!': activeBtn.includes(btn.id),
         }"
       >
-        {{ btn.text }}
+        <Icon v-if="btn.id === 'code'" name="mdi:code" />
+
+        <span v-if="btn.id !== 'code'">
+          {{ btn.text }}
+        </span>
       </Button>
     </ButtonGroup>
   </section>
@@ -26,7 +38,7 @@ import { ButtonGroup } from "~/components/ui/button-group";
 
 const props = defineProps<{ editor: any }>();
 
-const activeBtn = ref("");
+const activeBtn = ref<string[]>([]);
 const isActive = ref(false);
 
 const handleButtonClick = (id: string) => {
@@ -42,16 +54,12 @@ const handleButtonClick = (id: string) => {
     props.editor.chain().focus().toggleUnderline().run();
   }
 
-  if (id === "h1") {
-    props.editor.chain().focus().toggleHeading({ level: 1 }).run();
+  if (id === "strike") {
+    props.editor.chain().focus().toggleStrike().run();
   }
 
-  if (id === "h2") {
-    props.editor.chain().focus().toggleHeading({ level: 2 }).run();
-  }
-
-  if (id === "h3") {
-    props.editor.chain().focus().toggleHeading({ level: 3 }).run();
+  if (id === "code") {
+    props.editor.chain().focus().toggleCode().run();
   }
 };
 </script>

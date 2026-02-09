@@ -16,14 +16,23 @@ const props = defineProps<{
 
 const emit = defineEmits(["update:modelValue"]);
 
-import { useEditor, EditorContent } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
+import StarterKit from "@tiptap/starter-kit";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
 import EditorToolbar from "./EditorToolbar.vue";
+import Code from "@tiptap/extension-code";
 
 const editor = useEditor({
   content: props.modelValue,
-  extensions: [StarterKit, Markdown],
+  extensions: [
+    StarterKit,
+    Markdown,
+    Code.configure({
+      HTMLAttributes: {
+        class: "bg-muted py-1 px-2",
+      },
+    }),
+  ],
 
   onUpdate({ editor }) {
     emit("update:modelValue", editor.getHTML());
