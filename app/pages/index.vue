@@ -14,7 +14,11 @@
         </section>
 
         <section class="grid grid-cols-3 gap-6">
-          <PostCard v-for="value in [1, 2, 3, 4, 5]" :key="value" />
+          <PostCard
+            v-for="value in postStore.posts.data"
+            :post="value"
+            :key="value"
+          />
         </section>
       </article>
 
@@ -38,7 +42,22 @@ import UserCard from "~/components/custom/card/UserCard.vue";
 import H1 from "~/components/custom/headings/H1.vue";
 import NormalLink from "~/components/custom/links/NormalLink.vue";
 
+const route = useRoute();
+
 const auth = useAuthStore();
+const postStore = usePostStore();
+
+const loadPosts = async () => {
+  await postStore.fetchPostByOffset({ limit: 6 });
+};
+
+await loadPosts();
+console.log(postStore.posts.data);
+
+
+watch(() => route.query || route.path || postStore.posts.data, loadPosts, {
+  deep: true,
+});
 </script>
 
 <style scoped></style>

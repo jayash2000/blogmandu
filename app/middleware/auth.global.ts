@@ -15,7 +15,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     await auth.fetchMe();
   }
 
-  console.log({ user: auth.user });
+  // console.log({ user: auth.user });
 
   // Authenticated users should NOT see login/register
   if (auth.isAuthenticated && publicAuthPages.includes(to.path)) {

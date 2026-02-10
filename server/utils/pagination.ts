@@ -1,11 +1,13 @@
-import { and, asc, desc, ilike, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, sql } from "drizzle-orm";
 import { posts } from "../db/schema/posts";
 import { db } from "../db/client";
+import { parseMarkdown } from "~~/server/utils/markdown";
+import { users } from "../db/schema/users";
 
 export const offsetPagination = async ({
   page = 1,
   limit,
-  order = 'desc',
+  order = "desc",
   search,
   tags,
 }: {
@@ -33,18 +35,34 @@ export const offsetPagination = async ({
   }
 
   const data = await db
-    .select()
+    .select({
+      posts,
+      author: {
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role,
+      },
+    })
     .from(posts)
+    .leftJoin(users, eq(posts.authorId, users.id))
     .where(and(...conditions))
     .orderBy(order === "desc" ? desc(posts.createdAt) : asc(posts.createdAt))
     .limit(limit)
     .offset(offset);
+
+  const totalPosts = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(posts)
+    .where(and(...conditions))
+    .then((res) => res?.[0]?.count);
 
   return {
     type: "offset",
     page,
     limit,
     data,
+    count: totalPosts,
   };
 };
 

@@ -10,9 +10,9 @@
     </section>
 
     <section
-      class="w-full flex items-center justify-between px-4 py-2 bg-accent/50 dark:bg-card rounded-full"
+      class="lg:w-full flex flex-col lg:flex-row lg:items-center justify-between px-4 py-2 bg-accent/50 dark:bg-card rounded-full"
     >
-      <ul class="flex gap-4 items-center text-xs">
+      <ul class="hidden lg:flex gap-4 items-center text-xs">
         <li
           class="cursor-pointer py-1 px-2 rounded-full font-semibold hover:bg-primary/30 hover:text-primary select-none"
           v-for="filter in POSTS_FILTER_MENU"
@@ -29,48 +29,55 @@
 
       <section class="flex items-center gap-4 text-sm">
         <span>Sort by:</span>
+        <ClientOnly>
+          <Select>
+            <SelectTrigger class="bg-white lg:w-34 pl-4 rounded-full!">
+              <SelectValue placeholder="Newest first" />
+            </SelectTrigger>
 
-        <Select>
-          <SelectTrigger class="bg-white lg:w-34 pl-4 rounded-full!">
-            <SelectValue placeholder="Newest first" />
-          </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Sort options</SelectLabel>
 
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Sort options</SelectLabel>
-
-              <SelectItem
-                v-for="sort in POSTS_SORT_MENU"
-                :key="sort.id"
-                :value="sort.id"
-              >
-                {{ sort.label }}
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                <SelectItem
+                  v-for="sort in POSTS_SORT_MENU"
+                  :key="sort.id"
+                  :value="sort.id"
+                >
+                  {{ sort.label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </ClientOnly>
       </section>
     </section>
 
     <span v-if="post.loading">Loading...</span>
 
-    <section class="grid grid-cols-4 gap-8 w-full px-4">
-      <Main
-        v-for="value in post.posts.data"
-        :key="value.id as PropertyKey"
-        :post="value"
-      />
+    <section
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full px-4"
+    >
+      <ClientOnly>
+        <Main
+          v-for="value in post.posts.data"
+          :key="value.posts.id as PropertyKey"
+          :post="value"
+          @click="navigateTo(`/post/${value.posts.id}`)"
+        />
+      </ClientOnly>
     </section>
 
-    <Button class="cursor-pointer">
-      View more posts
-      <Icon name="uil:arrow-down" class="text-lg" />
-    </Button>
+    <ClientOnly>
+      <Button class="cursor-pointer">
+        View more posts
+        <Icon name="uil:arrow-down" class="text-lg" />
+      </Button>
+    </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useMounted } from "@vueuse/core";
 import Main from "~/components/custom/card/Main.vue";
 import H1 from "~/components/custom/headings/H1.vue";
 
@@ -86,9 +93,9 @@ const loadPosts = async () => {
 };
 
 await loadPosts();
+// console.log(post.posts, "post");
 
 watch(() => route.query || route.path || post.posts.data, loadPosts, {
   deep: true,
 });
-console.log(post.posts, "post");
 </script>

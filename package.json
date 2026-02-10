@@ -12,6 +12,7 @@
   "dependencies": {
     "@iconify-json/uil": "^1.2.3",
     "@nuxt/icon": "2.2.1",
+    "@nuxtjs/mdc": "^0.20.1",
     "@pinia/nuxt": "^0.11.3",
     "@shikijs/markdown-it": "^3.22.0",
     "@tailwindcss/vite": "^4.1.18",

@@ -1,5 +1,7 @@
 <template>
-  <Card class="max-w-md p-0 pb-4 overflow-hidden">
+  <Card
+    class="max-w-md p-0 pb-4 overflow-hidden cursor-pointer hover:bg-linear-to-br hover:from-card hover:to-primary"
+  >
     <CardTitle>
       <figure class="w-full h-40 overflow-hidden">
         <img
@@ -13,12 +15,7 @@
     <CardContent class="flex flex-col justify-between gap-4">
       <PostBadge id="technology" />
 
-      <h2 class="font-semibold">{{ post.title }}</h2>
-
-      <p
-        class="prose line-clamp-3 text-justify text-sm"
-        v-html="post.description"
-      ></p>
+      <h2 class="font-semibold">{{ post.posts.title }}</h2>
     </CardContent>
   </Card>
 </template>
@@ -28,6 +25,6 @@ import { Badge } from "~/components/ui/badge";
 import PostBadge from "../badge/PostBadge.vue";
 
 defineProps<{
-  post: Record<string, string>;
+  post: Record<string, any>;
 }>();
 </script>

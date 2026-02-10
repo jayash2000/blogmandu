@@ -14,8 +14,7 @@
     <CardContent>
       <article class="flex flex-col gap-4">
         <h2 class="font-semibold text-lg text-justify">
-          Mastering React Hooks: A Comprehensive Guide for Modern Web
-          Development
+          {{ post.posts.title }}
         </h2>
 
         <section class="flex items-center gap-2 text-xs">
@@ -30,7 +29,7 @@
             </span>
           </Avatar>
 
-          <span class="font-medium">{{ auth.user?.name }}</span>
+          <span class="font-medium">{{ post.author.name }}</span>
 
           <Icon name="mdi:circle" size="5" class="mx-2" />
 
@@ -57,6 +56,10 @@
 </template>
 
 <script setup lang="ts">
+defineProps<{
+  post: Record<string, any>;
+}>();
+
 const auth = useAuthStore();
 </script>
 

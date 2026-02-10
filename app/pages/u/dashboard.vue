@@ -1,53 +1,56 @@
 <template>
   <Dashboard>
     <template #sidebar-content>
-      <SidebarGroup class="space-y-3">
-        <SidebarGroupLabel>Author Console</SidebarGroupLabel>
+      <ClientOnly>
+        <SidebarGroup class="space-y-3">
+          <SidebarGroupLabel>Author Console</SidebarGroupLabel>
 
-        <SidebarGroupContent>
-          <SidebarMenu class="gap-4">
-            <SidebarMenuItem
-              v-for="item in SIDEBAR_MENU_ITEMS_AUTHOR"
-              :key="item.title"
-            >
-              <Button
-                as-child
-                variant="ghost"
-                @click="
-                  activeTab = item.id;
-                  activeTabTitle = item.title;
-                "
-                class="py-4 w-full justify-start dark:text-foreground cursor-pointer"
-                :class="{
-                  'dark:bg-accent bg-primary text-primary-foreground dark:hover:bg-accent! hover:bg-primary hover:text-primary-foreground dark:hover:text-foreground!':
-                    activeTab === item.id,
-                }"
+          <SidebarGroupContent>
+            <SidebarMenu class="gap-4">
+              <SidebarMenuItem
+                v-for="item in SIDEBAR_MENU_ITEMS_AUTHOR"
+                :key="item.title"
               >
-                <section class="flex items-center gap-4">
-                  <!-- admin
-                  <LayoutDashboard v-if="item.id === 'overview'" />
-                  <Pen v-if="item.id === 'post_management'" />
-                  <User2 v-if="item.id === 'user_management'" />
-                  <LucideMessageSquareText
-                    v-if="item.id === 'comment_moderation'"
-                  />
-                  <Clock v-if="item.id === 'scheduled_posts'" /> -->
+                <Button
+                  as-child
+                  variant="ghost"
+                  type="button"
+                  @click="
+                    activeTab = item.id;
+                    activeTabTitle = item.title;
+                  "
+                  class="py-4 w-full justify-start dark:text-foreground cursor-pointer"
+                  :class="{
+                    'dark:bg-accent bg-primary text-primary-foreground dark:hover:bg-accent! hover:bg-primary hover:text-primary-foreground dark:hover:text-foreground!':
+                      activeTab === item.id,
+                  }"
+                >
+                  <section class="flex items-center gap-4">
+                    <!-- admin
+                    <LayoutDashboard v-if="item.id === 'overview'" />
+                    <Pen v-if="item.id === 'post_management'" />
+                    <User2 v-if="item.id === 'user_management'" />
+                    <LucideMessageSquareText
+                      v-if="item.id === 'comment_moderation'"
+                    />
+                    <Clock v-if="item.id === 'scheduled_posts'" /> -->
 
-                  <LayoutDashboard v-if="item.id === 'dashboard'" />
-                  <BookOpenText v-if="item.id === 'posts'" />
-                  <LucideMessagesSquare v-if="item.id === 'comments'" />
-                  <TrendingUp v-if="item.id === 'analytics'" />
-                  <User2 v-if="item.id === 'edit_profile'" />
+                    <LayoutDashboard v-if="item.id === 'dashboard'" />
+                    <BookOpenText v-if="item.id === 'posts'" />
+                    <LucideMessagesSquare v-if="item.id === 'comments'" />
+                    <TrendingUp v-if="item.id === 'analytics'" />
+                    <User2 v-if="item.id === 'edit_profile'" />
 
-                  <Bell v-if="item.id === 'notifications'" />
+                    <Bell v-if="item.id === 'notifications'" />
 
-                  <span>{{ item.title }}</span>
-                </section>
-              </Button>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+                    <span>{{ item.title }}</span>
+                  </section>
+                </Button>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </ClientOnly>
     </template>
 
     <template #sidebar-inset>
@@ -61,9 +64,9 @@
             <DInsightCard
               v-for="i in insights"
               :key="i.id"
+              :id="i.id"
               :title="i.title"
               :icon="i.icon"
-              :number="i.number"
             />
           </section>
 
@@ -121,9 +124,9 @@ const activeTab = ref<string>("dashboard");
 const activeTabTitle = ref<string>("Dashboard");
 
 const insights = [
-  { id: "total_posts", title: "Total Posts", icon: BookOpen, number: 20 },
-  { id: "active_posts", title: "Active Posts", icon: Check, number: 15 },
-  { id: "total_likes", title: "Total Likes", icon: ThumbsUp, number: 124 },
+  { id: "total_posts", title: "Total Posts", icon: BookOpen },
+  { id: "active_posts", title: "Active Posts", icon: Check },
+  { id: "total_likes", title: "Total Likes", icon: ThumbsUp },
   {
     id: "total_comments",
     title: "Total Comments",

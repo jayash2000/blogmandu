@@ -22,12 +22,16 @@ import { EditorContent, useEditor } from "@tiptap/vue-3";
 import EditorToolbar from "./EditorToolbar.vue";
 import Code from "@tiptap/extension-code";
 
+const CustomCode = Code.extend({
+  name: "customCode",
+});
+
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
     StarterKit,
     Markdown,
-    Code.configure({
+    CustomCode.configure({
       HTMLAttributes: {
         class: "bg-muted py-1 px-2",
       },

@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-background w-full z-50 flex items-center justify-between px-6 py-4 border-b-2 border-border dark:border-none"
+    class="bg-background w-full z-50 flex flex-col gap-4 lg:gap-0 lg:flex-row items-center justify-between px-6 py-4 border-b-2 border-border dark:border-none"
     :class="{
       'border-none': auth.user?.role === 'admin',
       'justify-end': ['/u/dashboard', '/admin/dashboard'].includes(route.path),
@@ -32,11 +32,20 @@
       </NavigationMenuList>
     </NavigationMenu>
 
+    <Button
+      v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
+      class="flex lg:hidden"
+      @click="() => navigateTo('/u/post/create')"
+    >
+      <span> Create Post </span>
+      <Plus class="text-xs mb-0.5" />
+    </Button>
+
     <section class="flex gap-4 items-center">
       <Button
-        class="flex"
         v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
-        @click="navigateTo('/u/post/create')"
+        class="lg:flex hidden"
+        @click="() => navigateTo('/u/post/create')"
       >
         <span> Create Post </span>
         <Plus class="text-xs mb-0.5" />

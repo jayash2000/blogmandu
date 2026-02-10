@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { posts } from "~~/server/db/schema/posts";
+import { users } from "~~/server/db/schema/users";
 import { postIdSchema } from "~~/server/schema/post.schema";
 
 export default defineEventHandler(async (event) => {
@@ -20,7 +21,19 @@ export default defineEventHandler(async (event) => {
 
     const { id } = query.data;
 
-    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    const [post] = await db
+      .select({
+        post: { ...posts },
+        author: {
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          role: users.role,
+        },
+      })
+      .from(posts)
+      .where(eq(posts.id, id))
+      .leftJoin(users, eq(posts.authorId, users.id));
 
     if (!post) {
       return createApiResponse(event, 404, false, "Post not found");

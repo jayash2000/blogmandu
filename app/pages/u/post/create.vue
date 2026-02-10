@@ -1,9 +1,11 @@
 <template>
   <section class="h-full py-4 px-8 flex flex-col gap-8">
-    <H1 title="Create New Post" class="text-3xl" />
+    <H1 title="Create New Post" class="text-3xl text-center lg:text-start" />
 
     <form @submit.prevent="handleSubmit" class="w-full">
-      <section class="flex items-start justify-between gap-8">
+      <section
+        class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8"
+      >
         <section
           class="w-full bg-card p-8 rounded-md border shadow-md shadow-card"
         >
@@ -169,7 +171,11 @@
             </div>
           </Card>
 
-          <Button type="submit" class="flex items-center gap-1 cursor-pointer">
+          <Button
+            type="submit"
+            class="flex items-center gap-1 cursor-pointer"
+            :disabled="post.loading"
+          >
             <div v-if="!post.loading">
               Publish Post
               <Icon name="uil:message" />
@@ -190,6 +196,7 @@
             type="button"
             variant="outline"
             class="flex items-center gap-1 cursor-pointer"
+            @click="() => navigateTo('/')"
           >
             Cancel
           </Button>
@@ -232,10 +239,12 @@ const auth = useAuthStore();
 const post = usePostStore();
 
 const handleSubmit = async () => {
-  // console.log(createPostForm);
+  console.log(createPostForm);
   await post.createPost(
     createPostForm.title!,
-    createPostForm.contentEditor! || createPostForm.contentMarkdown!,
+    createPostForm.contentEditor && createPostForm.contentEditor !== "<p></p>"
+      ? createPostForm.contentEditor
+      : createPostForm.contentMarkdown!,
   );
 
   if (post.error) {

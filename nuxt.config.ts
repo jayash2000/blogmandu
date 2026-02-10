@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ["./app/assets/css/main.css"],
-  modules: ["@pinia/nuxt", "shadcn-nuxt", "@nuxtjs/color-mode", "@nuxt/icon"],
+  modules: ["@pinia/nuxt", "shadcn-nuxt", "@nuxtjs/color-mode", "@nuxt/icon", "@nuxtjs/mdc"],
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE_URL || "http://localhost:3000",
