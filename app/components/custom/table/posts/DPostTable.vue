@@ -101,9 +101,10 @@
     </Table>
 
     <Pagination
+      v-model:page="currentPage"
       v-slot="{ page }"
       :items-per-page="10"
-      :total="postStore.posts.count"
+      :total="postStore.posts.count || 0"
       :default-page="1"
       class="justify-end mt-4"
     >
@@ -117,14 +118,17 @@
             :is-active="item.value === page"
             @click="
               async () =>
-                await postStore.fetchPostByOffset({ page: item.value })
+                await postStore.fetchPostByOffset({
+                  page: item.value,
+                  limit: 10,
+                })
             "
           >
             {{ item.value }}
           </PaginationItem>
         </template>
 
-        <PaginationEllipsis :index="5" />
+        <PaginationEllipsis :index="1" />
 
         <PaginationNext />
       </PaginationContent>
@@ -154,18 +158,33 @@ import DManagePostBadge from "../../badge/DManagePostBadge.vue";
 import DPostTableDialog from "../../dialog/DPostTableDialog.vue";
 
 const route = useRoute();
-
-const auth = useAuthStore();
+const router = useRouter();
 const postStore = usePostStore();
 
-const loadPosts = async () => {
-  await postStore.fetchPostByOffset({});
+const currentPage = ref(Number(route.query.page) || 1);
+
+const loadPosts = async (page: number) => {
+  await postStore.fetchPostByOffset({
+    page,
+  });
 };
 
-await loadPosts();
-console.log(postStore.posts);
+await loadPosts(currentPage.value);
+// console.log(postStore.posts);
 
-watch(() => postStore.posts || route.path || route.query, loadPosts, {
-  deep: true,
+watch(currentPage, async (newPage) => {
+  router.push({ query: { ...route.query, page: newPage } });
+
+  await loadPosts(newPage);
 });
+
+watch(
+  () => route.query.page,
+  (newPage) => {
+    const pageNumber = Number(newPage) || 1;
+    if (pageNumber !== currentPage.value) {
+      currentPage.value = pageNumber;
+    }
+  },
+);
 </script>
