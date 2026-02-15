@@ -3,12 +3,10 @@
 
   <section v-if="!postStore.loading" class="h-full px-12 py-8">
     <ClientOnly>
-      <H1 :title="postStore.post.post?.title" class="text-3xl font-black" />
+      <Heading1 :title="postStore.post.post?.title" class="text-3xl font-black" />
 
       <section class="flex items-center gap-4 py-4">
-        <Avatar
-          class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center"
-        >
+        <Avatar class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center">
           <AvatarImage src="https://www.github.com/bot.png" />
         </Avatar>
 
@@ -31,12 +29,8 @@
       </section>
 
       <section class="flex items-center gap-4">
-        <Button
-          variant="outline"
-          class="p-3 cursor-pointer"
-          v-for="icon in POST_DETAIL_BUTTONS_ICON"
-          :key="icon.id"
-        >
+        <Button variant="outline" class="p-3 cursor-pointer" v-for="icon in POST_DETAIL_BUTTONS_ICON" :key="icon.id"
+          @click="() => handleClick(icon.id)">
           <Icon :name="icon.name" />
         </Button>
       </section>
@@ -45,15 +39,10 @@
         <figure class="w-full h-[60vh] rounded overflow-hidden">
           <img
             src="https://plus.unsplash.com/premium_photo-1666432045848-3fdbb2c74531?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="beach"
-            class="w-full h-full object-cover"
-          />
+            alt="beach" class="w-full h-full object-cover" />
         </figure>
 
-        <p
-          class="text-justify font-thin prose"
-          v-html="postStore.post.post?.contentMarkdown"
-        ></p>
+        <p class="text-justify font-thin prose" v-html="postStore.post.post?.contentMarkdown"></p>
 
         <section class="space-x-4">
           <Badge variant="secondary"> Mindfulness </Badge>
@@ -65,7 +54,7 @@
       </article>
 
       <section class="py-4 space-y-4">
-        <H1 title="Comments(3)" />
+        <Heading1 title="Comments(3)" />
 
         <Textarea placeholder="Write your comment here..." v-model="comment" />
 
@@ -73,9 +62,7 @@
       </section>
 
       <section class="flex gap-4 py-4">
-        <Avatar
-          class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center"
-        >
+        <Avatar class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center">
           <AvatarImage src="https://www.github.com/hello.png" />
         </Avatar>
 
@@ -97,15 +84,20 @@
 </template>
 
 <script setup lang="ts">
-import H1 from "~/components/custom/headings/H1.vue";
+import Heading1 from "~/components/custom/headings/Heading1.vue";
 import { Textarea } from "~/components/ui/textarea";
-import { posts } from "~~/server/db/schema/posts";
 
 const comment = ref<string>("");
 
 const postStore = usePostStore();
 
 const route = useRoute();
+
+const handleClick = (id: string) => { 
+  if(id === "like") {
+    
+  }
+}
 
 onMounted(async () => {
   await postStore.fetchPostById(route.params.id as string);

@@ -9,7 +9,7 @@ export default defineEventHandler((event) => {
   if (!token) return;
 
   try {
-    const data = jwt.verify(token, process.env.JWT_SECRET!);
+    const data = jwt.verify(token, useRuntimeConfig().public.jwtSecret);
     event.context.user = data;
   } catch {
     event.context.user = null;

@@ -7,24 +7,14 @@
 
           <SidebarGroupContent>
             <SidebarMenu class="gap-4">
-              <SidebarMenuItem
-                v-for="item in SIDEBAR_MENU_ITEMS_AUTHOR"
-                :key="item.title"
-              >
-                <Button
-                  as-child
-                  variant="ghost"
-                  type="button"
-                  @click="
-                    activeTab = item.id;
-                    activeTabTitle = item.title;
-                  "
-                  class="py-4 w-full justify-start dark:text-foreground cursor-pointer"
-                  :class="{
-                    'dark:bg-accent bg-primary text-primary-foreground dark:hover:bg-accent! hover:bg-primary hover:text-primary-foreground dark:hover:text-foreground!':
-                      activeTab === item.id,
-                  }"
-                >
+              <SidebarMenuItem v-for="item in SIDEBAR_MENU_ITEMS_AUTHOR" :key="item.title">
+                <Button as-child variant="ghost" type="button" @click="
+                  activeTab = item.id;
+                activeTabTitle = item.title;
+                " class="py-4 w-full justify-start dark:text-foreground cursor-pointer" :class="{
+                  'dark:bg-accent bg-primary text-primary-foreground dark:hover:bg-accent! hover:bg-primary hover:text-primary-foreground dark:hover:text-foreground!':
+                    activeTab === item.id,
+                }">
                   <section class="flex items-center gap-4">
                     <!-- admin
                     <LayoutDashboard v-if="item.id === 'overview'" />
@@ -55,33 +45,17 @@
 
     <template #sidebar-inset>
       <section class="h-full m-2 p-8 space-y-8">
-        <H1 :title="activeTabTitle" />
+        <Heading1 :title="activeTabTitle" />
 
         <section v-if="activeTab === 'dashboard'" class="space-y-12">
-          <section
-            class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-          >
-            <DInsightCard
-              v-for="i in insights"
-              :key="i.id"
-              :id="i.id"
-              :title="i.title"
-              :icon="i.icon"
-            />
+          <section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <Insight v-for="i in insights" :key="i.id" :id="i.id" :title="i.title" :icon="i.icon" />
           </section>
 
           <section class="grid grid-cols-1 md:grid-cols-2 pr-8 gap-6">
-            <DPostCard
-              id="recent-posts"
-              title="Recent Posts"
-              :posts="AUTHOR_DASHBOARD_RECENT_POSTS"
-            />
+            <Post id="recent-posts" title="Recent Posts" :posts="AUTHOR_DASHBOARD_RECENT_POSTS" />
 
-            <DPostCard
-              id="top-posts"
-              title="Top Posts"
-              :posts="AUTHOR_DASHBOARD_RECENT_POSTS"
-            />
+            <Post id="top-posts" title="Top Posts" :posts="AUTHOR_DASHBOARD_RECENT_POSTS" />
           </section>
         </section>
 
@@ -114,9 +88,9 @@ import {
   TrendingUp,
   User2,
 } from "lucide-vue-next";
-import DPostCard from "~/components/custom/card/dashboard/DPostCard.vue";
-import DInsightCard from "~/components/custom/card/dashboard/DInsightCard.vue";
-import H1 from "~/components/custom/headings/H1.vue";
+import Insight from "~/components/custom/card/dashboard/Insight.vue";
+import Post from "~/components/custom/card/dashboard/Post.vue";
+import Heading1 from "~/components/custom/headings/Heading1.vue";
 import Dashboard from "~/components/custom/layout/Dashboard.vue";
 import DPostTable from "~/components/custom/table/posts/DPostTable.vue";
 

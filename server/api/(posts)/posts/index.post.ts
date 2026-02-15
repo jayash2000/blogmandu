@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
+import slugify from "slugify";
 import { db } from "~~/server/db/client";
 import { posts } from "~~/server/db/schema/posts";
-import { createPostSchema } from "~~/server/schema/post.schema";
 import { parseMarkdown } from "~~/server/utils/markdown";
-import slugify from "slugify";
+import { createPostSchema } from "~~/shared/schema/post.schema";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         event,
         400,
         false,
-        result.error.issues[0]?.message!,
+        result.error.issues[0]?.message as string,
       );
     }
 

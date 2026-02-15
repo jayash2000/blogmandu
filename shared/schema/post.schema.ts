@@ -38,3 +38,12 @@ export const postFilterSchema = z.object({
     .transform((t) => t.split(","))
     .optional(),
 });
+
+export const updatePostSchema = z.object({
+  title: z.string().min(1, { message: "Title is empty" }).trim(),
+  contentMarkdown: z
+    .string()
+    .min(1, { message: "Please enter markdown content" }),
+  contentHtml: z.string().min(1, { message: "Please enter HTML content" }),
+  imageUrl: z.string().optional(),
+});

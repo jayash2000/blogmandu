@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { users } from "~~/server/db/schema/users";
-import { createApiResponse } from "~~/server/utils/api";
+import { createApiResponse } from "~~/server/utils/api-response";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { loginSchema } from "~~/server/schema/auth.schema";
+import { loginSchema } from "~~/shared/schema/auth.schema";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -36,7 +36,8 @@ export default defineEventHandler(async (event) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET!,
+      // process.env.JWT_SECRET!,
+      useRuntimeConfig().public.jwtSecret,
       {
         expiresIn: "1d",
       },

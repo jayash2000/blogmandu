@@ -1,13 +1,11 @@
 <template>
   <Card class="max-w-4xl w-full">
     <CardContent class="flex flex-col items-center gap-4">
-      <Avatar
-        class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center size-30"
-      >
+      <Avatar class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center size-30">
         <AvatarImage src="https://github.com/test.png" />
       </Avatar>
 
-      <H1 title="John Nepali" />
+      <Heading1 title="John Nepali" />
 
       <p class="text-center max-w-4/5 text-sm">
         John Nepali is a seasoned tech journalist with over a decade of
@@ -22,21 +20,15 @@
           Follow
         </Button>
 
-        <Button
-          v-if="auth.isAuthenticated && route.params.id === auth.user?.id"
-          variant="outline"
-        >
+        <Button v-if="auth.isAuthenticated && route.params.id === auth.user?.id" variant="outline">
           Edit Profile
         </Button>
       </section>
 
       <ul class="flex items-center gap-4 pt-4">
         <NuxtLink :to="link.href" v-for="link in PROFILE_LINKS" :key="link.id">
-          <Icon
-            :name="link.name"
-            size="25"
-            class="hover:text-primary/80 dark:hover:text-accent-foreground cursor-pointer"
-          />
+          <Icon :name="link.name" size="25"
+            class="hover:text-primary/80 dark:hover:text-accent-foreground cursor-pointer" />
         </NuxtLink>
       </ul>
     </CardContent>
@@ -44,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import H1 from "~/components/custom/headings/H1.vue";
+import Heading1 from '../headings/Heading1.vue';
+
 
 const auth = useAuthStore();
 

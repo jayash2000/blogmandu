@@ -1,8 +1,5 @@
-import { eq } from "drizzle-orm";
-import { db } from "~~/server/db/client";
-import { posts } from "~~/server/db/schema/posts";
-import { postFilterSchema } from "~~/server/schema/post.schema";
 import { cursorPagination, offsetPagination } from "~~/server/utils/pagination";
+import { postFilterSchema } from "~~/shared/schema/post.schema";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,7 +12,7 @@ export default defineEventHandler(async (event) => {
         event,
         400,
         false,
-        query.error.issues[0]?.message!,
+        query.error.issues[0]?.message as string,
       );
     }
 
@@ -29,8 +26,8 @@ export default defineEventHandler(async (event) => {
         limit,
         cursor,
         order,
-        search: search!,
-        tags: tags!,
+        search: search as string,
+        tags: tags as string[],
       });
 
       return createApiResponse(
@@ -46,8 +43,8 @@ export default defineEventHandler(async (event) => {
       limit,
       order,
       page,
-      search: search!,
-      tags: tags!,
+      search: search as string,
+      tags: tags as string[],
     });
 
     return createApiResponse(

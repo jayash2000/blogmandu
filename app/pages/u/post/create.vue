@@ -1,62 +1,36 @@
 <template>
   <section class="h-full py-4 px-8 flex flex-col gap-8">
-    <H1 title="Create New Post" class="text-3xl text-center lg:text-start" />
+    <Heading1 title="Create New Post" class="text-3xl text-center lg:text-start" />
 
     <form @submit.prevent="handleSubmit" class="w-full">
-      <section
-        class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8"
-      >
-        <section
-          class="w-full bg-card p-8 rounded-md border shadow-md shadow-card"
-        >
+      <section class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8">
+        <section class="w-full bg-card p-8 rounded-md border shadow-md shadow-card">
           <FieldSet>
             <FieldGroup>
               <Field>
                 <FieldLabel for="title">Title</FieldLabel>
-                <Input
-                  type="text"
-                  id="title"
-                  placeholder="Tech Blog..."
-                  class="focus:ring-1!"
-                  v-model="createPostForm.title"
-                />
+                <Input type="text" id="title" placeholder="Tech Blog..." class="focus:ring-1!"
+                  v-model="createPostForm.title" />
               </Field>
 
               <Field>
                 <FieldLabel for="slug">Slug</FieldLabel>
-                <Input
-                  type="text"
-                  class="focus:ring-1!"
-                  v-model="slug"
-                  disabled
-                />
+                <Input type="text" class="focus:ring-1!" v-model="slug" disabled />
               </Field>
 
               <Field>
                 <FieldLabel>Content</FieldLabel>
 
-                <section
-                  class="grid items-end gap-4"
-                  :class="{ 'grid-cols-2': mdActive }"
-                >
-                  <PostContentTabs
-                    v-model:text-value="createPostForm.contentEditor"
-                    v-model:markdown-value="createPostForm.contentMarkdown"
-                    v-model:md-active="mdActive"
-                  />
+                <section class="grid items-end gap-4" :class="{ 'grid-cols-2': mdActive }">
+                  <PostContentTabs v-model:text-value="createPostForm.contentEditor"
+                    v-model:markdown-value="createPostForm.contentMarkdown" v-model:md-active="mdActive" />
 
                   <section v-if="mdActive" class="border rounded-md p-4 h-full">
-                    <span
-                      v-if="!createPostForm.contentMarkdown"
-                      class="text-muted-foreground text-sm"
-                    >
+                    <span v-if="!createPostForm.contentMarkdown" class="text-muted-foreground text-sm">
                       Live Preview
                     </span>
 
-                    <section
-                      class="prose dark:prose-invert max-w-none"
-                      v-html="preview"
-                    ></section>
+                    <section class="prose dark:prose-invert max-w-none" v-html="preview"></section>
                   </section>
                 </section>
               </Field>
@@ -87,31 +61,21 @@
                 <FieldLabel for="featured-image">Featured Image</FieldLabel>
 
                 <section>
-                  <input
-                    type="file"
-                    id="featured-image"
-                    ref="imageUpload"
-                    class="hidden"
-                    accept="image/*"
-                    @change="
-                      (event) =>
-                        (currentFile =
-                          (event.target as HTMLInputElement).files?.[0] ?? null)
-                    "
-                  />
+                  <input type="file" id="featured-image" ref="imageUpload" class="hidden" accept="image/*" @change="
+                    (event) =>
+                    (currentFile =
+                      (event.target as HTMLInputElement).files?.[0] ?? null)
+                  " />
 
-                  <Item
-                    variant="outline"
+                  <Item variant="outline"
                     class="border-dashed bg-accent dark:bg-accent-foreground dark:text-accent w-full h-full cursor-pointer"
-                    @click="openFileDialog"
-                  >
+                    @click="openFileDialog">
                     <span v-if="!currentFile"> Click to upload image </span>
 
                     <figure v-else class="h-[20vh] w-full overflow-hidden">
                       <img
                         src="https://images.unsplash.com/photo-1769631417306-a1da09f42b20?q=80&w=1193&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="nature"
-                      />
+                        alt="nature" />
                     </figure>
                   </Item>
                 </section>
@@ -122,7 +86,7 @@
 
         <section class="max-w-xs w-full flex flex-col gap-4">
           <Card class="px-5 py-4 flex flex-col gap-4">
-            <H1 title="Publish Settings" class="text-lg" />
+            <Heading1 title="Publish Settings" class="text-lg" />
 
             <FieldSet>
               <FieldGroup>
@@ -164,18 +128,14 @@
           </Card>
 
           <Card class="px-5 py-4 flex flex-col gap-4">
-            <H1 title="Metadata" class="text-lg" />
+            <Heading1 title="Metadata" class="text-lg" />
 
             <div class="text-sm">
               Author: <span class="text-primary">{{ auth.user?.name }}</span>
             </div>
           </Card>
 
-          <Button
-            type="submit"
-            class="flex items-center gap-1 cursor-pointer"
-            :disabled="post.loading"
-          >
+          <Button type="submit" class="flex items-center gap-1 cursor-pointer" :disabled="post.loading">
             <div v-if="!post.loading">
               Publish Post
               <Icon name="uil:message" />
@@ -192,12 +152,8 @@
           <Icon name="uil:save" class="text-lg" />
         </Button> -->
 
-          <Button
-            type="button"
-            variant="outline"
-            class="flex items-center gap-1 cursor-pointer"
-            @click="() => navigateTo('/')"
-          >
+          <Button type="button" variant="outline" class="flex items-center gap-1 cursor-pointer"
+            @click="() => navigateTo('/')">
             Cancel
           </Button>
         </section>
@@ -211,7 +167,7 @@ import { Loader2Icon } from "lucide-vue-next";
 import slugify from "slugify";
 import { toast } from "vue-sonner";
 import TiptapEditor from "~/components/custom/editor/TiptapEditor.vue";
-import H1 from "~/components/custom/headings/H1.vue";
+import Heading1 from "~/components/custom/headings/Heading1.vue";
 import PostContentTabs from "~/components/custom/tabs/PostContentTabs.vue";
 import { Item, ItemActions } from "~/components/ui/item";
 

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { posts } from "~~/server/db/schema/posts";
 import { users } from "~~/server/db/schema/users";
-import { postIdSchema } from "~~/server/schema/post.schema";
+import { postIdSchema } from "~~/shared/schema/post.schema";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -10,13 +10,22 @@ export default defineEventHandler(async (event) => {
       postIdSchema.safeParse(body),
     );
 
+    console.log(query, "q");
+
     if (!query.success) {
       return createApiResponse(
         event,
         400,
         false,
-        query.error.issues[0]?.message!,
+        query.error.issues[0]?.message as string,
       );
+
+      // throw new ApiError(
+      //   400,
+      //   "Validation failed",
+      //   true,
+      //   z.treeifyError(query.error),
+      // );
     }
 
     const { id } = query.data;
@@ -39,15 +48,15 @@ export default defineEventHandler(async (event) => {
       return createApiResponse(event, 404, false, "Post not found");
     }
 
-    return createApiResponse(
-      event,
-      200,
-      true,
-      "Post fetched successfully",
-      post,
-    );
+    return {
+      success: true,
+      message: "Post fetched successfully",
+      data: post,
+    };
   } catch (error) {
-    console.error("Server error:", error);
-    return createApiResponse(event, 500, false, "Server error");
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Internal server error",
+    });
   }
 });

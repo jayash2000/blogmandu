@@ -2,15 +2,12 @@ import {
   boolean,
   index,
   pgTable,
-  PgVector,
   text,
   timestamp,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
-import { db } from "../client";
-import { sql } from "drizzle-orm";
 
 export const posts = pgTable(
   "posts",
@@ -33,20 +30,10 @@ export const posts = pgTable(
       .notNull(),
     updatedAt: timestamp("updated_at"),
   },
-  (table) => ({
-    createdAtIdx: index("idx_posts_created_at").on(table.createdAt.desc()),
-    tagsIdx: index("idx_posts_tags").using("gin", table.tags),
-  }),
-  //   [
-  //   index("idx_posts_created_at").on(table.createdAt.desc()),
-  //   index("idx_posts_tags").on(table.tags),
-  // ],
+  (table) => [
+    index("idx_posts_user_created_at").on(table.authorId, table.createdAt),
+    index("idx_posts_created_at").on(table.createdAt.desc()),
+    index("idx_posts_slug_unique").on(table.slug),
+    index("idx_posts_tags").using("gin", table.tags),
+  ],
 );
-
-// db.execute(
-//   sql`CREATE INDEX idx_posts_created_at ON ${posts}(${posts.createdAt} DESC)`,
-// );
-
-// db.execute(
-//   sql`CREATE INDEX idx_posts_tags ON ${posts} USING GIN(${post.tags}))`,
-// );

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { users } from "~~/server/db/schema/users";
 import bcrypt from "bcrypt";
-import { registerSchema } from "~~/server/schema/auth.schema";
+import { registerSchema } from "~~/shared/schema/auth.schema";
 
 export default defineEventHandler(async (event) => {
   try {
