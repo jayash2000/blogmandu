@@ -32,14 +32,15 @@
       </NavigationMenuList>
     </NavigationMenu>
 
-    <Button
-      v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
-      class="flex lg:hidden"
-      @click="() => navigateTo('/u/post/create')"
-    >
-      <span> Create Post </span>
-      <Plus class="text-xs mb-0.5" />
-    </Button>
+    <NuxtLink to="/u/post/create">
+      <Button
+        v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
+        class="flex lg:hidden"
+      >
+        <span> Create Post </span>
+        <Plus class="text-xs mb-0.5" />
+      </Button>
+    </NuxtLink>
 
     <section class="flex gap-4 items-center">
       <Button

@@ -1,6 +1,6 @@
 <template>
   <Card
-    class="max-w-md p-0 pb-4 overflow-hidden cursor-pointer hover:bg-linear-to-br hover:from-card hover:to-primary"
+    class="max-w-md p-0 pb-4 overflow-hidden cursor-pointer dark:hover:bg-slate-800 hover:brightness-75 hover:bg-accent"
   >
     <CardTitle>
       <figure class="w-full h-40 overflow-hidden">
@@ -15,7 +15,7 @@
     <CardContent class="flex flex-col justify-between gap-4">
       <PostBadge id="technology" />
 
-      <h2 class="font-semibold">{{ post.posts.title }}</h2>
+      <h2 class="font-semibold">{{ post.post?.title }}</h2>
     </CardContent>
   </Card>
 </template>
@@ -23,8 +23,9 @@
 <script setup lang="ts">
 import { Badge } from "~/components/ui/badge";
 import PostBadge from "../badge/PostBadge.vue";
+import type { Post } from "~/types/api.types";
 
 defineProps<{
-  post: Record<string, any>;
+  post: Post;
 }>();
 </script>

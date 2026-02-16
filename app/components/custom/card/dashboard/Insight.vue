@@ -8,7 +8,7 @@
 
     <CardContent class="text-3xl font-bold -ml-2 font-mono">
       <span v-if="id === 'total_posts'">
-        {{ postStore.posts.count || 0 }}
+        {{ postStore.count || 0 }}
       </span>
 
       <span v-else>0</span>
@@ -27,11 +27,17 @@ defineProps<{
 }>();
 
 const postStore = usePostStore();
+const likeStore = useLikeStore();
+
 const route = useRoute();
 
 const loadPosts = async () => {
-  await postStore.fetchAllPosts();
+  await postStore.fetchPostByOffset({});
 };
+
+// const loadLikeCount = async() => {
+//   await likeStore.fetchLikesByPost()
+// }
 
 await loadPosts();
 console.log(postStore.posts);

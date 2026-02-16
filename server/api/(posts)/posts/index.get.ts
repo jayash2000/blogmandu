@@ -19,24 +19,31 @@ export default defineEventHandler(async (event) => {
     const page = query.data.page || 1;
     const limit = query.data.limit || 10;
 
-    const { cursor, order, search, tags } = query.data;
+    const { createdAt, id, order, search, tags } = query.data;
 
-    if (cursor) {
+    if (createdAt && id) {
       const postList = await cursorPagination({
         limit,
-        cursor,
+        id,
+        createdAt,
         order,
         search: search as string,
         tags: tags as string[],
       });
 
-      return createApiResponse(
-        event,
-        200,
-        true,
-        "Post fetched successfully",
-        postList,
-      );
+      // return createApiResponse(
+      //   event,
+      //   200,
+      //   true,
+      //   "Post fetched successfully",
+      //   postList,
+      // );
+
+      return {
+        success: true,
+        message: "Post fetched successfully",
+        ...postList,
+      };
     }
 
     const postList = await offsetPagination({
@@ -47,13 +54,15 @@ export default defineEventHandler(async (event) => {
       tags: tags as string[],
     });
 
-    return createApiResponse(
-      event,
-      200,
-      true,
-      "Post fetched successfully",
-      postList,
-    );
+    // return createApiResponse(
+    //   event,
+    //   200,
+    //   true,
+    //   "Post fetched successfully",
+    //   postList,
+    // );
+
+    return { success: true, message: "Post fetched successfully", ...postList };
   } catch (error) {
     console.error("Server error:", error);
     return createApiResponse(event, 500, false, "Server error");

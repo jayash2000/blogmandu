@@ -19,14 +19,19 @@ export const postFilterSchema = z.object({
     .min(1)
     .max(50)
     .default(10),
-  cursor: z
-    .object({
-      createdAt: z.iso
-        .datetime({ message: "Invalid cursor datetime format" })
-        .optional(),
-      id: z.uuid({ message: "Invalid cursor id format" }),
-    })
+  createdAt: z.iso
+    .datetime({ message: "Invalid cursor datetime format" })
     .optional(),
+  id: z.uuid({ message: "Invalid cursor id format" }).optional(),
+
+  // cursor: z
+  //   .object({
+  //     createdAt: z.iso
+  //       .datetime({ message: "Invalid cursor datetime format" })
+  //       .optional(),
+  //     id: z.uuid({ message: "Invalid cursor id format" }),
+  //   })
+  //   .optional(),
   // cursor: z.iso
   //   .datetime({ message: "Cursor must be in datetime format" })
   //   .optional(),

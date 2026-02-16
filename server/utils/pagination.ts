@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ilike, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, ilike, lt, or, sql } from "drizzle-orm";
 import { posts } from "../db/schema/posts";
 import { db } from "../db/client";
 import { parseMarkdown } from "~~/server/utils/markdown";
@@ -36,7 +36,7 @@ export const offsetPagination = async ({
 
   const data = await db
     .select({
-      posts,
+      post: posts,
       author: {
         id: users.id,
         email: users.email,
@@ -63,31 +63,42 @@ export const offsetPagination = async ({
     limit,
     data,
     count: totalPosts,
+    currentPostCount: data.length,
   };
 };
 
 export const cursorPagination = async ({
   limit,
-  cursor,
+  id,
+  createdAt,
   order,
   search,
   tags,
 }: {
   limit: number;
-  cursor: { id: string; createdAt?: string };
-  order: "asc" | "desc";
-  search: string;
-  tags: string[];
+  id: string;
+  createdAt?: string;
+  order?: "asc" | "desc";
+  search?: string;
+  tags?: string[];
 }) => {
   const conditions = [];
 
-  if (!cursor.id || !cursor.createdAt) return null;
+  if (!id || !createdAt) return null;
 
   // cursor check
   conditions.push(
     order === "desc"
-      ? sql`${posts.createdAt} < ${cursor}`
-      : sql`${posts.createdAt} > ${cursor}`,
+      ? or(
+          lt(posts.createdAt, new Date(createdAt)),
+          and(eq(posts.createdAt, new Date(createdAt)), lt(posts.id, id)),
+        )
+      : or(
+          gt(posts.createdAt, new Date(createdAt)),
+          and(eq(posts.createdAt, new Date(createdAt)), gt(posts.id, id)),
+        ),
+    // ? sql`${posts.createdAt} < ${cursor}`
+    // : sql`${posts.createdAt} > ${cursor}`,
   );
 
   if (search) {
@@ -102,9 +113,18 @@ export const cursorPagination = async ({
   }
 
   const rows = await db
-    .select()
+    .select({
+      post: posts,
+      author: {
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role,
+      },
+    })
     .from(posts)
     .where(and(...conditions))
+    .leftJoin(users, eq(posts.authorId, users.id))
     .orderBy(order === "desc" ? desc(posts.createdAt) : asc(posts.createdAt))
     .limit(limit + 1);
 
@@ -114,15 +134,17 @@ export const cursorPagination = async ({
 
   return {
     type: "cursor",
+    limit,
+    currentPostCount: data.length,
     // if there is next post after, return cursor id (created_at) of final post
-    nextCursor: {
-      createdAt: hasNextPage
-        ? {
-            createdAt: data[data.length - 1]?.createdAt,
-            id: data[data.length - 1]?.id,
-          }
-        : null,
-    },
+    hasNextPage,
+    nextCursor: hasNextPage
+      ? {
+          // id and createdAt of last post
+          id: data[data.length - 1]?.post.id,
+          createdAt: data[data.length - 1]?.post.createdAt,
+        }
+      : null,
     data,
   };
 };

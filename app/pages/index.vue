@@ -14,7 +14,7 @@
         </section>
 
         <section class="grid grid-cols-3 gap-6">
-          <PostCard v-for="value in postStore.posts.data" :post="value" :key="value" />
+          <PostCard v-for="value in postStore.posts" :post="value" :key="value.post.id" />
         </section>
       </article>
 
@@ -48,10 +48,10 @@ const loadPosts = async () => {
 };
 
 await loadPosts();
-console.log(postStore.posts.data);
+console.log(postStore.posts);
 
 
-watch(() => route.query || route.path || postStore.posts.data, loadPosts, {
+watch(() => route.query || route.path, loadPosts, {
   deep: true,
 });
 </script>

@@ -9,21 +9,28 @@
       </p>
     </section>
 
+    <!-- Filters and Sorting -->
     <section
-      class="lg:w-full flex flex-col lg:flex-row lg:items-center justify-between px-4 py-2 bg-accent/50 dark:bg-card rounded-full">
+      class="lg:w-full flex flex-col lg:flex-row lg:items-center justify-between px-4 py-2 bg-accent/50 dark:bg-card rounded-full"
+    >
       <ul class="hidden lg:flex gap-4 items-center text-xs">
         <li
+          v-for="filter in POSTS_FILTER_MENU"
+          :key="filter.id"
           class="cursor-pointer py-1 px-2 rounded-full font-semibold hover:bg-primary/30 hover:text-primary select-none"
-          v-for="filter in POSTS_FILTER_MENU" :key="filter.id" :class="{
+          :class="{
             'bg-primary text-white hover:bg-primary! hover:text-white':
               activeFilter === filter.id,
-          }" @click="activeFilter = filter.id">
+          }"
+          @click="activeFilter = filter.id"
+        >
           {{ filter.label }}
         </li>
       </ul>
 
       <section class="flex items-center gap-4 text-sm">
         <span>Sort by:</span>
+
         <ClientOnly>
           <Select>
             <SelectTrigger class="bg-white lg:w-34 pl-4 rounded-full!">
@@ -34,7 +41,11 @@
               <SelectGroup>
                 <SelectLabel>Sort options</SelectLabel>
 
-                <SelectItem v-for="sort in POSTS_SORT_MENU" :key="sort.id" :value="sort.id">
+                <SelectItem
+                  v-for="sort in POSTS_SORT_MENU"
+                  :key="sort.id"
+                  :value="sort.id"
+                >
                   {{ sort.label }}
                 </SelectItem>
               </SelectGroup>
@@ -44,43 +55,85 @@
       </section>
     </section>
 
-    <span v-if="post.loading">Loading...</span>
+    <!-- Loading -->
+    <span v-if="postStore.loading">Loading...</span>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full px-4">
+    <!-- Posts -->
+    <section
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full px-4"
+    >
       <ClientOnly>
-        <Main v-for="value in post.posts.data" :key="value.posts.id as PropertyKey" :post="value"
-          @click="navigateTo(`/post/${value.posts.id}`)" />
+        <Main
+          v-for="value in postStore.posts"
+          :key="value.post?.id"
+          :post="value"
+          @click="navigateTo(`/post/${value.post?.id}`)"
+        />
       </ClientOnly>
     </section>
 
     <ClientOnly>
-      <Button class="cursor-pointer">
-        View more posts
+      <Button
+        v-if="postStore.hasNextPage"
+        class="cursor-pointer"
+        :disabled="postStore.loading"
+        @click="loadMore"
+      >
+        {{ postStore.loading ? "Loading..." : "View more posts" }}
         <Icon name="uil:arrow-down" class="text-lg" />
       </Button>
+
+      <div
+        v-if="!postStore.hasNextPage"
+        class="text-muted-foreground/50 text-sm mt-4 flex flex-col gap-2 items-center"
+      >
+        You are all caught up for now
+        <Verified />
+      </div>
     </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
+import { Verified } from "lucide-vue-next";
 import Main from "~/components/custom/card/Main.vue";
 import Heading1 from "~/components/custom/headings/Heading1.vue";
 
-const activeFilter = ref("all");
-
 const route = useRoute();
-const post = usePostStore();
 
-const loadPosts = async () => {
-  await post.fetchPostByOffset({
-    limit: 12,
+const postStore = usePostStore();
+
+const activeFilter = ref("all");
+const sortOrder = ref<"asc" | "desc">("desc");
+
+const lastPost = computed(() => {
+  return postStore.posts[postStore.posts.length - 1];
+});
+
+const loadInitial = async () => {
+  await postStore.fetchPostByOffset({
+    limit: 8,
+    order: sortOrder.value,
   });
 };
 
-await loadPosts();
-// console.log(post.posts, "post");
+const loadMore = async () => {
+  console.log(postStore.hasNextPage, "next");
 
-watch(() => route.query || route.path || post.posts.data, loadPosts, {
-  deep: true,
-});
+  if (!postStore.hasNextPage) return;
+
+  await postStore.loadMore(
+    {
+      limit: 8,
+      order: sortOrder.value,
+      cursor: {
+        id: lastPost?.value?.post.id as string,
+        createdAt: lastPost?.value?.post.createdAt as Date,
+      },
+    },
+    true,
+  );
+};
+
+onMounted(loadInitial);
 </script>
