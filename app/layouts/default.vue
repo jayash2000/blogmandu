@@ -21,9 +21,8 @@
             '/forgot-password',
             '/reset-password',
             '/admin/login',
-            '/u/dashboard',
             '/admin/dashboard',
-          ].includes(route.path)
+          ].includes(route.path) && !route.path.startsWith('/u/dashboard')
         "
       />
     </header>
@@ -31,7 +30,7 @@
     <main
       class="min-h-[80vh] py-2 px-6"
       :class="{
-        'py-0!': route.path === '/u/dashboard',
+        'py-0!': route.path.startsWith('/u/dashboard'),
       }"
     >
       <slot />
@@ -44,9 +43,10 @@
           '/register',
           '/forgot-password',
           '/reset-password',
-          '/u/dashboard',
           '/admin/login',
-        ].includes(route.path) && auth.user?.role !== 'admin'
+        ].includes(route.path) &&
+        !route.path.startsWith('/u/dashboard') &&
+        auth.user?.role !== 'admin'
       "
       class="bg-muted border-t-2 border-border text-muted-foreground text-sm flex justify-between items-center py-6 px-6"
     >

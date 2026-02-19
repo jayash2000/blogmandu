@@ -39,15 +39,16 @@ export const SIDEBAR_MENU_ITEMS_ADMIN = [
 ];
 
 export const SIDEBAR_MENU_ITEMS_AUTHOR = [
-  { id: "dashboard", title: "Dashboard" },
-  { id: "posts", title: "Manage Posts" },
-  { id: "comments", title: "Manage comments" },
+  { id: "dashboard", title: "Dashboard", href: "" },
+  { id: "posts", title: "Manage Posts", href: "posts" },
+  { id: "comments", title: "Manage comments", href: "comments" },
   {
     id: "analytics",
     title: "Post Analytics",
+    href: "analytics",
   },
-  { id: "edit_profile", title: "Edit Profile" },
-  { id: "notifications", title: "Notifications" },
+  { id: "edit_profile", title: "Edit Profile", href: "edit-profile" },
+  { id: "notifications", title: "Notifications", href: "notifications" },
 ];
 
 export const POST_DETAIL_BUTTONS_ICON = [

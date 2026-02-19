@@ -2,15 +2,15 @@ import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { posts } from "~~/server/db/schema/posts";
 import { users } from "~~/server/db/schema/users";
-import { postIdSchema } from "~~/shared/schema/post.schema";
+import { postRouteSchema } from "~~/shared/schema/route.schema";
 
 export default defineEventHandler(async (event) => {
   try {
     const query = await getValidatedRouterParams(event, (body) =>
-      postIdSchema.safeParse(body),
+      postRouteSchema.safeParse(body),
     );
 
-    console.log(query, "q");
+    // console.log(query, "q");
 
     if (!query.success) {
       return createApiResponse(

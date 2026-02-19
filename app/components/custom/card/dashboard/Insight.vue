@@ -11,6 +11,10 @@
         {{ postStore.count || 0 }}
       </span>
 
+      <span v-else-if="id === 'total_likes'">
+        {{ likeStore.userTotalLikeCount || 0 }}
+      </span>
+
       <span v-else>0</span>
     </CardContent>
   </Card>
@@ -32,7 +36,7 @@ const likeStore = useLikeStore();
 const route = useRoute();
 
 const loadPosts = async () => {
-  await postStore.fetchPostByOffset({});
+  await postStore.fetchMyPost();
 };
 
 // const loadLikeCount = async() => {
@@ -47,4 +51,9 @@ watch(
   () => loadPosts,
   { deep: true },
 );
+
+onMounted(async () => {
+  await likeStore.fetchLikedPostsByUser();
+  await postStore.fetchMyPost();
+});
 </script>

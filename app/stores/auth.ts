@@ -79,7 +79,7 @@ export const useAuthStore = defineStore("auth", {
       const headers = useRequestHeaders(["cookie"]) as Record<string, string>;
 
       try {
-        const res = await $fetch<ApiResponse>(`/api/auth/me`, {
+        const res = await $fetch(`/api/auth/me`, {
           method: "GET",
           baseURL: config.public.apiBase,
           headers,

@@ -3,18 +3,25 @@
     class="bg-background w-full z-50 flex flex-col gap-4 lg:gap-0 lg:flex-row items-center justify-between px-6 py-4 border-b-2 border-border dark:border-none"
     :class="{
       'border-none': auth.user?.role === 'admin',
-      'justify-end': ['/u/dashboard', '/admin/dashboard'].includes(route.path),
+      'justify-end':
+        route.path.startsWith('/u/dashboard') ||
+        ['/admin/dashboard'].includes(route.path),
     }"
   >
     <h1
       class="font-bold text-3xl dark:text-blue-200"
-      v-if="!['/u/dashboard', '/admin/dashboard'].includes(route.path)"
+      v-if="
+        !['/admin/dashboard'].includes(route.path) &&
+        !route.path.startsWith('/u/dashboard')
+      "
     >
       <span class="text-primary">blog</span>mandu
     </h1>
 
     <NavigationMenu
-      v-if="auth.user?.role !== 'admin' && route.path !== '/u/dashboard'"
+      v-if="
+        auth.user?.role !== 'admin' && !route.path.startsWith('/u/dashboard')
+      "
     >
       <NavigationMenuList class="space-x-8">
         <NavigationMenuItem
@@ -32,11 +39,8 @@
       </NavigationMenuList>
     </NavigationMenu>
 
-    <NuxtLink to="/u/post/create">
-      <Button
-        v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
-        class="flex lg:hidden"
-      >
+    <NuxtLink to="/u/post/create" class="flex lg:hidden">
+      <Button v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')">
         <span> Create Post </span>
         <Plus class="text-xs mb-0.5" />
       </Button>

@@ -1,15 +1,20 @@
 import type {
   ApiResponse,
   CursorPaginatedPosts,
+  MyPaginatedPosts,
+  MyPosts,
   PaginatedPosts,
   Post,
   PostQuery,
+  PostWithAuthor,
 } from "~/types/api.types";
 
 export const usePostStore = defineStore("post", {
   state: () => ({
-    posts: [] as Post[],
+    posts: [] as Post[] | PostWithAuthor[],
     post: null as Post | null,
+
+    authorEmail: "" as string,
 
     total: 0,
     page: 1,
@@ -41,6 +46,10 @@ export const usePostStore = defineStore("post", {
       this.response = data;
     },
 
+    setHasNextPage(value: boolean) {
+      this.hasNextPage = value;
+    },
+
     async createPost(title: string, content: string) {
       this.setLoading(true);
       this.error = null;
@@ -60,20 +69,28 @@ export const usePostStore = defineStore("post", {
       }
     },
 
-    async fetchPostByOffset(query: PostQuery, append = false) {
+    async fetchPostByOffset(
+      query: PostQuery & { mine?: boolean },
+      append = false,
+    ) {
       this.setLoading(true);
       this.error = null;
 
       try {
-        const res = await $fetch<PaginatedPosts>(`/api/posts`, {
-          query: {
-            page: query?.page ?? this.page,
-            limit: query?.limit ?? this.limit,
-            order: query?.order,
-            search: query?.search,
-            tags: query?.tags,
+        const res = await $fetch<PaginatedPosts | MyPaginatedPosts>(
+          query.mine ? `/api/users/me/posts` : `/api/posts`,
+          {
+            query: {
+              page: query?.page ?? this.page,
+              limit: query?.limit ?? this.limit,
+              order: query?.order,
+              search: query?.search,
+              tags: query?.tags,
+            },
           },
-        });
+        );
+
+        console.log(res.data, "res");
 
         this.posts = res.data;
         this.total = res.total;
@@ -111,7 +128,7 @@ export const usePostStore = defineStore("post", {
         console.log(res, "res");
 
         if (append) {
-          this.posts.push(...res.data);
+          (this.posts as PostWithAuthor[]).push(...res.data);
           console.log(this.posts, "posts");
         } else {
           this.posts = res.data;
@@ -144,6 +161,19 @@ export const usePostStore = defineStore("post", {
       } finally {
         this.setLoading(false);
       }
+    },
+
+    async fetchMyPost() {
+      this.setLoading(true);
+      this.error = null;
+
+      try {
+        const res = await $fetch<MyPosts>(`/api/users/me/posts`);
+
+        this.authorEmail = res.data.author;
+        this.count = res.data.count;
+        this.posts = res.data.posts as Post[];
+      } catch (error) {}
     },
   },
 });

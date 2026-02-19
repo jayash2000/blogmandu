@@ -118,7 +118,7 @@ const loadInitial = async () => {
 };
 
 const loadMore = async () => {
-  console.log(postStore.hasNextPage, "next");
+  // console.log(postStore.hasNextPage, "next");
 
   if (!postStore.hasNextPage) return;
 
@@ -135,5 +135,7 @@ const loadMore = async () => {
   );
 };
 
-onMounted(loadInitial);
+onMounted(async () => {
+  await loadInitial().then(() => postStore.setHasNextPage(true));
+});
 </script>

@@ -30,27 +30,43 @@
       </TableHeader>
 
       <TableBody>
-        <TableRow v-for="post in postStore.posts.data" :key="post.posts.id">
+        <TableRow v-for="post in postStore.posts" :key="(post as Post).id">
           <TableCell class="py-2!">
             <div class="lg:max-w-80 overflow-x-hidden text-ellipsis">
-              {{ post.posts.title }}
+              {{ (post as Post).title }}
             </div>
           </TableCell>
 
           <TableCell>
-            <DManagePostBadge :id="post.posts.status || 'draft'" />
+            <DManagePostBadge
+              :id="// post.post.tags ||
+              'draft'"
+            />
           </TableCell>
 
           <TableCell class="capitalize">
-            {{ post.posts.category || "technology" }}
+            {{
+              // post.post.category ||
+              "technology"
+            }}
           </TableCell>
 
           <TableCell>
-            {{ post.posts.createdAt.split("T")[0] }}
+            {{
+              new Date((post as Post)?.createdAt)
+                .toUTCString()
+                .split(" ")
+                .slice(0, 4)
+                .join(" ")
+            }}
           </TableCell>
 
           <TableCell>
-            {{ new Intl.NumberFormat("en-US").format(post.posts.likes || 0) }}
+            {{
+              new Intl.NumberFormat("en-US").format(
+                likeStore.likesByPost[(post as Post).id] || 0,
+              )
+            }}
           </TableCell>
 
           <TableCell>
@@ -104,7 +120,7 @@
       v-model:page="currentPage"
       v-slot="{ page }"
       :items-per-page="10"
-      :total="postStore.posts.count || 0"
+      :total="postStore.count || 0"
       :default-page="1"
       class="justify-end mt-4"
     >
@@ -156,26 +172,38 @@ import {
 } from "~/components/ui/table";
 import DManagePostBadge from "../../badge/DManagePostBadge.vue";
 import DPostTableDialog from "../../dialog/DPostTableDialog.vue";
+import type { PaginatedPosts, Post, PostWithAuthor } from "~/types/api.types";
 
 const route = useRoute();
 const router = useRouter();
+
 const postStore = usePostStore();
+const likeStore = useLikeStore();
+const authStore = useAuthStore();
 
 const currentPage = ref(Number(route.query.page) || 1);
 
-const loadPosts = async (page: number) => {
+const loadPosts = async (page: number, mine: boolean) => {
   await postStore.fetchPostByOffset({
     page,
+    mine,
   });
+
+  console.log(postStore.posts);
+
+  for (const post of postStore.posts) {
+    await likeStore.fetchLikesByPost(
+      mine ? (post as Post).id : (post as PostWithAuthor).post.id,
+    );
+  }
 };
 
-await loadPosts(currentPage.value);
-// console.log(postStore.posts);
+await loadPosts(currentPage.value, true);
 
 watch(currentPage, async (newPage) => {
   router.push({ query: { ...route.query, page: newPage } });
 
-  await loadPosts(newPage);
+  await loadPosts(newPage, true);
 });
 
 watch(

@@ -1,9 +1,13 @@
-import type { Like } from "~/types/api.types";
+import type { Like, LikedPosts } from "~/types/api.types";
 
 export const useLikeStore = defineStore("likes", {
   state: () => ({
     likers: null as Like[] | null,
     likeCount: 0,
+    likesByPost: {} as Record<string, number>,
+
+    userLikedPosts: null as LikedPosts[] | null,
+    userTotalLikeCount: 0,
 
     message: "",
     isLiked: false,
@@ -64,6 +68,7 @@ export const useLikeStore = defineStore("likes", {
       try {
         const res = await $fetch(`/api/posts/${postId}/likes`);
 
+        this.likesByPost[postId] = res.data.count;
         this.likers = res.data.liked_by;
         this.likeCount = res.data.count;
       } catch (error) {
@@ -73,6 +78,11 @@ export const useLikeStore = defineStore("likes", {
       }
     },
 
-    
+    async fetchLikedPostsByUser() {
+      const res = await $fetch("/api/users/me/likes");
+
+      this.userLikedPosts = res.data.posts;
+      this.userTotalLikeCount = res.data.count;
+    },
   },
 });

@@ -6,7 +6,7 @@ export const createPostSchema = z.object({
 });
 
 export const postIdSchema = z.object({
-  id: z.uuid({ message: "Invalid post ID format" }),
+  id: z.uuid().min(1, { message: "Invalid post ID format" }),
 });
 
 export const postFilterSchema = z.object({
@@ -20,9 +20,9 @@ export const postFilterSchema = z.object({
     .max(50)
     .default(10),
   createdAt: z.iso
-    .datetime({ message: "Invalid cursor datetime format" })
+    .datetime({ message: "Invalid or empty cursor datetime format" })
     .optional(),
-  id: z.uuid({ message: "Invalid cursor id format" }).optional(),
+  id: z.uuid({ message: "Invalid or empty cursor id format" }).optional(),
 
   // cursor: z
   //   .object({
