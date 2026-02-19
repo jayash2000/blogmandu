@@ -4,7 +4,7 @@
   <section v-if="!postStore.loading" class="h-full px-12 py-8">
     <ClientOnly>
       <Heading1
-        :title="postStore.post?.post?.title as string"
+        :title="(postStore.post as PostWithAuthor).post.title as string"
         class="text-3xl font-black"
       />
 
@@ -16,14 +16,14 @@
         </Avatar>
 
         <span class="text-primary font-medium text-sm">{{
-          postStore.post?.author?.name
+          (postStore.post as PostWithAuthor)?.author?.name
         }}</span>
 
         <div class="text-sm">
           Published on
           <span class="font-semibold text-accent-foreground">
             {{
-              new Date(postStore.post?.post?.createdAt as Date)
+              new Date((postStore.post as PostWithAuthor)?.post.createdAt)
                 .toUTCString()
                 .split(" ")
                 .slice(0, 4)
@@ -64,7 +64,7 @@
 
         <p
           class="text-justify font-thin prose"
-          v-html="postStore.post?.post.contentMarkdown"
+          v-html="(postStore.post as PostWithAuthor)?.post.contentMarkdown"
         ></p>
 
         <section class="space-x-4">
@@ -77,46 +77,66 @@
       </article>
 
       <section class="py-4 space-y-4">
-        <Heading1 title="Comments(3)" />
+        <Heading1 :title="`Comments`" />
 
-        <Textarea placeholder="Write your comment here..." v-model="comment" />
+        <form @submit="onSubmit" class="space-y-4">
+          <FieldGroup>
+            <VeeField name="content" v-slot="{ field, errors }">
+              <Field :data-invalid="!!errors.length">
+                <Textarea
+                  placeholder="Write your comment here..."
+                  v-bind="field"
+                  :aria-invalid="!!errors.length"
+                />
 
-        <Button>Post Comment</Button>
+                <FieldError v-if="errors.length" :errors="errors" />
+              </Field>
+            </VeeField>
+          </FieldGroup>
+
+          <Button :disabled="commentStore.loading">
+            <div
+              v-if="commentStore.loading && isSubmitButtonClicked"
+              class="flex items-center gap-2"
+            >
+              Submitting...
+              <Loader class="animate-spin" />
+            </div>
+
+            <span v-else> Post Comment </span>
+          </Button>
+        </form>
       </section>
 
-      <section class="flex gap-4 py-4">
-        <Avatar
-          class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center"
+      <section class="flex flex-col gap-2 mt-4">
+        <span
+          v-if="!commentStore.comments.length && commentStore.loading"
+          class="text-center text-muted-foreground text-sm py-2"
+          >No Comments</span
         >
-          <AvatarImage src="https://www.github.com/hello.png" />
-        </Avatar>
 
-        <section class="space-y-2 text-sm">
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">Mark Watt</span>
-            <span class="text-muted-foreground">2 hours ago</span>
-          </div>
-
-          <p class="text-justify">
-            This is a truly insightful article. I've been looking for ways to
-            integrate more mindfulness into my daily routine, and your practical
-            tips are very helpful. Thank you!
-          </p>
-        </section>
+        <CommentTree v-else :post-id="route.params.id as string" />
       </section>
     </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
+import { toTypedSchema } from "@vee-validate/zod";
+import { Loader } from "lucide-vue-next";
+import { useForm, Field as VeeField } from "vee-validate";
 import { toast } from "vue-sonner";
+import CommentTree from "~/components/custom/comments/CommentTree.vue";
 import Heading1 from "~/components/custom/headings/Heading1.vue";
 import { Textarea } from "~/components/ui/textarea";
+import type { PostWithAuthor } from "~/types/api.types";
+import { commentSchema } from "~~/shared/schema/comment.schema";
 
-const comment = ref<string>("");
+const isSubmitButtonClicked = ref(false);
 
 const postStore = usePostStore();
 const likeStore = useLikeStore();
+const commentStore = useCommentStore();
 
 const route = useRoute();
 
@@ -142,6 +162,31 @@ const handleClick = async (id: string) => {
     });
   }
 };
+
+const { handleSubmit, resetForm } = useForm({
+  validationSchema: toTypedSchema(commentSchema),
+  initialValues: {
+    content: "",
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  console.log(values);
+  isSubmitButtonClicked.value = true;
+
+  await commentStore.createComment(route.params.id as string, values.content);
+
+  if (!commentStore.response?.success) {
+    showToast("error", commentStore.error as string);
+    return;
+  }
+
+  resetForm();
+  showToast("success", commentStore.response?.message as string);
+
+  // refresh comments
+  await commentStore.refresh(route.params.id as string);
+});
 
 onMounted(async () => {
   await postStore.fetchPostById(route.params.id as string);

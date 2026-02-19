@@ -8,3 +8,7 @@ export const idRouteSchema = z.object({
 export const postRouteSchema = z.object({
   id: z.uuid({ message: "Invalid post ID format" }),
 });
+
+export const userRouteSchema = z.object({
+  userId: z.uuid({ message: "Invalid user ID format" }),
+});

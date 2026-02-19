@@ -5,9 +5,11 @@
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <h1 class="font-bold text-3xl px-2 py-3 dark:text-blue-200">
-                <span class="text-primary">blog</span>mandu
-              </h1>
+              <NuxtLink to="/">
+                <h1 class="font-bold text-3xl px-2 py-3 dark:text-blue-200">
+                  <span class="text-primary">blog</span>mandu
+                </h1>
+              </NuxtLink>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>

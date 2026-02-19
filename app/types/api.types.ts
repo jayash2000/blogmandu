@@ -29,7 +29,7 @@ export interface Post {
   authorId: string;
   isPublished: boolean | null;
   description: string | null;
-  createdAt: Date;
+  createdAt: Date | string;
   updatedAt: Date | null;
 }
 

@@ -8,15 +8,17 @@
         ['/admin/dashboard'].includes(route.path),
     }"
   >
-    <h1
-      class="font-bold text-3xl dark:text-blue-200"
-      v-if="
-        !['/admin/dashboard'].includes(route.path) &&
-        !route.path.startsWith('/u/dashboard')
-      "
-    >
-      <span class="text-primary">blog</span>mandu
-    </h1>
+    <NuxtLink to="/">
+      <h1
+        class="font-bold text-3xl dark:text-blue-200"
+        v-if="
+          !['/admin/dashboard'].includes(route.path) &&
+          !route.path.startsWith('/u/dashboard')
+        "
+      >
+        <span class="text-primary">blog</span>mandu
+      </h1>
+    </NuxtLink>
 
     <NavigationMenu
       v-if="

@@ -14,7 +14,11 @@
         </section>
 
         <section class="grid grid-cols-3 gap-6">
-          <PostCard v-for="value in postStore.posts" :post="value" :key="value.post.id" />
+          <PostCard
+            v-for="value in postStore.posts as PostWithAuthor[]"
+            :post="value"
+            :key="value.post.id" 
+            />
         </section>
       </article>
 
@@ -37,6 +41,7 @@ import PostCard from "~/components/custom/card/PostCard.vue";
 import UserCard from "~/components/custom/card/UserCard.vue";
 import Heading1 from "~/components/custom/headings/Heading1.vue";
 import NormalLink from "~/components/custom/links/NormalLink.vue";
+import type { PostWithAuthor } from "~/types/api.types";
 
 const route = useRoute();
 
@@ -49,7 +54,6 @@ const loadPosts = async () => {
 
 await loadPosts();
 console.log(postStore.posts);
-
 
 watch(() => route.query || route.path, loadPosts, {
   deep: true,

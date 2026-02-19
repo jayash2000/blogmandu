@@ -1,18 +1,7 @@
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  gt,
-  ilike,
-  inArray,
-  is,
-  isNull,
-  lt,
-  or,
-} from "drizzle-orm";
+import { and, asc, desc, eq, gt, isNotNull, isNull, lt, or } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { comments } from "~~/server/db/schema/comments";
+import { users } from "~~/server/db/schema/users";
 import { postFilterSchema } from "~~/shared/schema/post.schema";
 import { postRouteSchema } from "~~/shared/schema/route.schema";
 
@@ -70,16 +59,17 @@ export default defineEventHandler(async (event) => {
   }
 
   // moderation condition (admin doesn't need any restriction)
-  if (event.context.user.role === "admin") {
-    conditions.push(eq(comments.status, "visible"));
-  }
+  // if (event.context.user.role === "admin") {
+  //   conditions.push(eq(comments.status, "visible"));
+  // }
 
   // top level comments
   const postId = router.data.id;
 
   const topLevelComments = await db
-    .select()
+    .select({ comments, user: { id: users.id, name: users.name } })
     .from(comments)
+    .leftJoin(users, eq(comments.userId, users.id))
     .where(
       and(
         eq(comments.postId, postId),
@@ -101,32 +91,35 @@ export default defineEventHandler(async (event) => {
   }
 
   // top level comments id
-  const topLevelIds = topLevelComments.map((c) => c.id);
+  const topLevelIds = topLevelComments.map((c) => c.comments.id);
 
   // replies
   const replies = await db
-    .select()
+    .select({ comments, user: { id: users.id, name: users.name } })
     .from(comments)
+    .leftJoin(users, eq(comments.userId, users.id))
+
     // inArray = for multiple checking and matching
-    .where(inArray(comments.parentId, topLevelIds))
+    .where(and(eq(comments.postId, postId), isNotNull(comments.parentId)))
     .orderBy(desc(comments.createdAt));
 
   // Build tree
   const tree = buildTree([...topLevelComments, ...replies]);
 
   // check if there are more comments after
-  const hasNextPage = topLevelComments.length > limit;
-  const data = topLevelComments.slice(0, limit);
+  const hasNextPage = tree.length > limit;
+  const data = tree.slice(0, limit);
 
   return {
     type: "cursor",
     limit,
-    currentPostCount: data.length,
+    currentCommentCount: data.length,
+    total: topLevelComments.length + replies.length,
     hasNextPage,
     nextCursor: hasNextPage
       ? {
-          id: data[data.length - 1]?.postId,
-          createdAt: data[data.length - 1]?.createdAt,
+          id: data[data.length - 1]?.comments.id,
+          createdAt: data[data.length - 1]?.comments.createdAt,
         }
       : null,
     data,

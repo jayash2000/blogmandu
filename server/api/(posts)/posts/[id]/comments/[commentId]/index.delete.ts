@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "~~/server/db/client";
 import { comments } from "~~/server/db/schema/comments";
+import { users } from "~~/server/db/schema/users";
 import { idRouteSchema } from "~~/shared/schema/route.schema";
 
 export default defineEventHandler(async (event) => {
@@ -22,8 +23,9 @@ export default defineEventHandler(async (event) => {
   // fetch comment
   const commentId = query.data.commentId;
   const [foundComment] = await db
-    .select()
+    .select({ comments, user: { id: users.id, email: users.email } })
     .from(comments)
+    .leftJoin(users, eq(comments.userId, users.id))
     .where(eq(comments.id, commentId))
     .limit(1);
 
@@ -36,7 +38,7 @@ export default defineEventHandler(async (event) => {
 
   // verify if comment belongs to the post
   const postId = query.data.id;
-  if (foundComment.postId !== postId) {
+  if (foundComment.comments.postId !== postId) {
     throw createError({
       statusCode: 400,
       message: "Comment does not belong to this post",
@@ -44,7 +46,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // verify if user is author or admin
-  if (foundComment.userId !== user.id && user.role !== "admin") {
+  if (foundComment.comments.userId !== user.id && user.role !== "admin") {
     throw createError({
       statusCode: 403,
       message: "Forbidden",
@@ -52,18 +54,17 @@ export default defineEventHandler(async (event) => {
   }
 
   // update is_deleted and content
-  const deletedComment = await db
+  await db
     .update(comments)
     .set({
       isDeleted: true,
       content: "Comment removed",
     })
-    .where(eq(comments.id, commentId))
-    .returning();
+    .where(eq(comments.id, commentId));
 
   return {
     success: true,
     message: "Comment removed successfully",
-    deletedComment,
+    deletedComment: foundComment,
   };
 });

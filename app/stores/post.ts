@@ -12,7 +12,7 @@ import type {
 export const usePostStore = defineStore("post", {
   state: () => ({
     posts: [] as Post[] | PostWithAuthor[],
-    post: null as Post | null,
+    post: null as Post | PostWithAuthor | null,
 
     authorEmail: "" as string,
 
@@ -42,8 +42,8 @@ export const usePostStore = defineStore("post", {
         "Something went wrong";
     },
 
-    setResponse(data: { success: boolean; message: string }) {
-      this.response = data;
+    setResponse(res: ApiResponse) {
+      this.response = res;
     },
 
     setHasNextPage(value: boolean) {
@@ -69,10 +69,7 @@ export const usePostStore = defineStore("post", {
       }
     },
 
-    async fetchPostByOffset(
-      query: PostQuery & { mine?: boolean },
-      append = false,
-    ) {
+    async fetchPostByOffset(query: PostQuery & { mine?: boolean }) {
       this.setLoading(true);
       this.error = null;
 
@@ -129,7 +126,7 @@ export const usePostStore = defineStore("post", {
 
         if (append) {
           (this.posts as PostWithAuthor[]).push(...res.data);
-          console.log(this.posts, "posts");
+          // console.log(this.posts, "posts");
         } else {
           this.posts = res.data;
         }
@@ -150,12 +147,9 @@ export const usePostStore = defineStore("post", {
       this.error = null;
 
       try {
-        const post = await $fetch<{
-          success: boolean;
-          message: string;
-          data: Post;
-        }>(`/api/posts/${id}`);
-        this.post = post.data;
+        const post = await $fetch(`/api/posts/${id}`);
+
+        this.post = post.data as PostWithAuthor;
       } catch (error) {
         this.setError(error);
       } finally {

@@ -63,10 +63,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Post } from "~/types/api.types";
+import type { Post, PostWithAuthor } from "~/types/api.types";
 
 defineProps<{
-  post: Post;
+  post: PostWithAuthor;
 }>();
 
 const auth = useAuthStore();

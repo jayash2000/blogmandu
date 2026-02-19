@@ -64,8 +64,8 @@
     >
       <ClientOnly>
         <Main
-          v-for="value in postStore.posts"
-          :key="value.post?.id"
+          v-for="value in postStore.posts as PostWithAuthor[]"
+          :key="value.post.id"
           :post="value"
           @click="navigateTo(`/post/${value.post?.id}`)"
         />
@@ -98,6 +98,7 @@
 import { Verified } from "lucide-vue-next";
 import Main from "~/components/custom/card/Main.vue";
 import Heading1 from "~/components/custom/headings/Heading1.vue";
+import type { PostWithAuthor } from "~/types/api.types";
 
 const route = useRoute();
 
@@ -107,7 +108,7 @@ const activeFilter = ref("all");
 const sortOrder = ref<"asc" | "desc">("desc");
 
 const lastPost = computed(() => {
-  return postStore.posts[postStore.posts.length - 1];
+  return postStore.posts[postStore.posts.length - 1] as PostWithAuthor;
 });
 
 const loadInitial = async () => {

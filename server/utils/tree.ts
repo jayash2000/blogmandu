@@ -8,18 +8,18 @@ export const buildTree = (comments: Record<string, any>[]) => {
     comment.children = [];
 
     // copy all comments
-    map[comment.id] = comment;
+    map[comment.comments.id] = comment;
   }
 
   // 2. Roots
   for (const comment of comments) {
     // copy all comments with no parent_id
-    if (!comment.parentId) {
+    if (!comment.comments.parentId) {
       roots.push(comment);
     }
     // copy all comments of map with parent id
     else {
-      const parent = map[comment.parentId];
+      const parent = map[comment.comments.parentId];
 
       if (parent) {
         parent.children.push(comment);
