@@ -10,9 +10,12 @@
 
         <section class="space-y-2 text-sm">
           <div class="flex items-center gap-4">
-            <span class="font-semibold">
-              {{ comment.user?.name }}
-            </span>
+            <NuxtLink :to="`/profile/${comment.user?.email}`">
+
+              <span class="font-semibold">
+                {{ comment.user?.name }}
+              </span>
+            </NuxtLink>
 
             <span class="text-muted-foreground">
               {{
@@ -28,7 +31,7 @@
           <p
             class="text-justify"
             :class="{
-              'text-muted-foreground mb-3 select-none':
+              'text-muted-foreground mb-3 italic tracking-wide select-none':
                 comment.comments.isDeleted,
             }"
           >
@@ -52,7 +55,7 @@
           class="text-destructive"
           @click="deleteComment"
           v-if="
-            authStore.user?.id === comment.user?.id &&
+            authStore.authUser?.id === comment.user?.id &&
             !comment.comments.isDeleted
           "
           :disabled="commentStore.loading && isDeleteButtonClicked"
@@ -92,6 +95,8 @@
       </form>
     </section>
 
+    <Separator />
+
     <!-- children -->
     <section v-if="comment.children?.length" class="space-y-2 mt-2">
       <CommentItem
@@ -100,8 +105,6 @@
         :comment="child"
       />
     </section>
-
-    <Separator />
   </section>
 </template>
 

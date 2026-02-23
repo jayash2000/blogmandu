@@ -13,19 +13,17 @@ export default defineEventHandler(async (event) => {
     }
 
     const [findUser] = await db
-      .select()
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+      })
       .from(users)
       .where(eq(users.id, user.id))
       .limit(1);
 
-    const data = {
-      id: findUser?.id,
-      name: findUser?.name,
-      email: findUser?.email,
-      role: findUser?.role,
-    };
-
-    return createApiResponse(event, 200, true, "Fetched user info", data);
+    return { success: true, message: "Fetched user info", data: findUser };
   } catch (error) {
     console.error("Server error:", error);
     return createApiResponse(event, 500, false, "Server error");

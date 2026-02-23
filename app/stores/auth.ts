@@ -1,18 +1,31 @@
 import type { ApiResponse, User } from "~/types/api.types";
+import type { AuthUser } from "~/types/auth.types";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     data: {} as ApiResponse,
     loading: false,
-    error: "",
+    error: null as string | null,
     user: null as Record<string, string> | null,
+    authUser: null as AuthUser | null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.authUser,
   },
 
   actions: {
+    setLoading(value: boolean) {
+      this.loading = value;
+    },
+
+    setError(error: unknown) {
+      this.error =
+        (error as any)?.data.message ||
+        (error as Error)?.message ||
+        "Something went wrong";
+    },
+
     async register(
       name: string,
       email: string,
@@ -65,6 +78,7 @@ export const useAuthStore = defineStore("auth", {
 
         this.data = res;
         this.user = null;
+        this.authUser = null;
       } catch (error: any) {
         this.error = error.data.message || "Failed to logout";
       } finally {
@@ -73,7 +87,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async fetchMe() {
-      this.loading = true;
+      this.setLoading(true);
       this.error = "";
       const config = useRuntimeConfig();
       const headers = useRequestHeaders(["cookie"]) as Record<string, string>;
@@ -86,13 +100,25 @@ export const useAuthStore = defineStore("auth", {
         });
 
         this.data = res;
-        if (res.data) {
-          this.user = res.data as Record<string, string>;
-        }
-      } catch (error: any) {
-        this.error = error.data?.message || "Failed to fetch user";
+        this.authUser = res.data as AuthUser;
+      } catch (error) {
+        this.setError(error);
       } finally {
-        this.loading = false;
+        this.setLoading(false);
+      }
+    },
+
+    async fetchUser(email: string) {
+      this.setLoading(true);
+      this.error = null;
+
+      try {
+        const res = await $fetch(`/api/users/${email}`);
+        this.user = res.data.user;
+      } catch (error) {
+        this.setError(error);
+      } finally {
+        this.setLoading(false);
       }
     },
   },

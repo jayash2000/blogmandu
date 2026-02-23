@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       },
     })
     .from(users)
-    .where(eq(users.id, params.data.userId))
+    .where(eq(users.email, params.data.email))
     .limit(1);
 
   if (!user) {

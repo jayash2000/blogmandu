@@ -76,6 +76,22 @@
         </section>
       </article>
 
+      <section
+        class="text-sm flex items-center gap-8 p-2 bg-muted text-accent-foreground rounded-xl"
+      >
+        <section class="flex items-center gap-2">
+          <span>Likes</span>
+          <span class="text-primary font-semibold">
+            {{ likeStore.likeCount }}
+          </span>
+        </section>
+
+        <section class="flex items-center gap-2">
+          <span>Comments</span>
+          <span class="text-primary font-semibold">0</span>
+        </section>
+      </section>
+
       <section class="py-4 space-y-4">
         <Heading1 :title="`Comments`" />
 
@@ -110,12 +126,13 @@
 
       <section class="flex flex-col gap-2 mt-4">
         <span
-          v-if="!commentStore.comments.length && commentStore.loading"
+          v-if="!commentStore.comments.length && !commentStore.loading"
           class="text-center text-muted-foreground text-sm py-2"
-          >No Comments</span
         >
+          No Comments
+        </span>
 
-        <CommentTree v-else :post-id="route.params.id as string" />
+        <CommentTree :post-id="`${route.params.id as string}`" />
       </section>
     </ClientOnly>
   </section>
@@ -189,7 +206,9 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 onMounted(async () => {
-  await postStore.fetchPostById(route.params.id as string);
+  await postStore.fetchPostById(route.params.id as string).then(async () => {
+    await likeStore.fetchLikesByPost(route.params.id as string);
+  });
 
   if (postStore.post) {
     await likeStore.checkLikeStatus(route.params.id as string);

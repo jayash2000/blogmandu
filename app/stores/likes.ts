@@ -81,7 +81,7 @@ export const useLikeStore = defineStore("likes", {
     async fetchLikedPostsByUser() {
       const res = await $fetch("/api/users/me/likes");
 
-      this.userLikedPosts = res.data.posts;
+      this.userLikedPosts = res.data.posts as LikedPosts[];
       this.userTotalLikeCount = res.data.count;
     },
   },

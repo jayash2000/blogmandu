@@ -16,14 +16,10 @@ export default defineEventHandler(async (event) => {
   const likedPosts = await db
     .select({
       id: likes.id,
-      post: {
-        id: posts.id,
-        title: posts.title,
-        slug: posts.slug,
-      },
+      post: posts,
     })
     .from(likes)
-    .innerJoin(posts, eq(likes.postId, posts.id))
+    .leftJoin(posts, eq(likes.postId, posts.id))
     .where(eq(likes.userId, user.id));
 
   return {

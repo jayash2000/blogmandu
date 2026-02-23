@@ -1,5 +1,5 @@
 <template>
-  <Card class="space-y-6 p-4 bg-card">
+  <Card class="space-y-6 p-4 bg-card" v-if="commentStore.comments.length">
     <!-- loading state -->
     <section v-if="commentStore.loading" class="flex gap-4 py-4 items-center">
       <Skeleton

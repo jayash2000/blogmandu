@@ -43,6 +43,16 @@ export interface PostWithAuthor {
   post: Post;
 }
 
+export interface MyPosts {
+  message: string;
+  count: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+  author: string;
+  data: Post[];
+}
+
 export interface PaginatedMeta {
   total: number;
   page: number;
@@ -69,14 +79,6 @@ export interface CursorPaginatedPosts {
   hasNextPage: boolean;
 }
 
-export interface MyPosts {
-  data: {
-    count: number;
-    author: string;
-    posts: Record<string, any>;
-  };
-}
-
 export interface Like {
   id: string;
   user: {
@@ -87,9 +89,5 @@ export interface Like {
 
 export interface LikedPosts {
   id: string;
-  post: {
-    id: string;
-    title: string;
-    slug: string;
-  };
+  post: Post
 }

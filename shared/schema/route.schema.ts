@@ -10,5 +10,5 @@ export const postRouteSchema = z.object({
 });
 
 export const userRouteSchema = z.object({
-  userId: z.uuid({ message: "Invalid user ID format" }),
+  email: z.email({ message: "Invalid email address" }),
 });

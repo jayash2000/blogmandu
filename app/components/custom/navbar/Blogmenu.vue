@@ -42,27 +42,29 @@
     </NavigationMenu>
 
     <NuxtLink to="/u/post/create" class="flex lg:hidden">
-      <Button v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')">
+      <Button
+        v-if="auth.authUser?.role === 'user' && !route.path.startsWith('/u')"
+      >
         <span> Create Post </span>
         <Plus class="text-xs mb-0.5" />
       </Button>
     </NuxtLink>
 
     <section class="flex gap-4 items-center">
-      <Button
-        v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
-        class="lg:flex hidden"
-        @click="() => navigateTo('/u/post/create')"
-      >
-        <span> Create Post </span>
-        <Plus class="text-xs mb-0.5" />
-      </Button>
+      <NuxtLink to="/u/post/create" class="lg:flex hidden">
+        <Button
+          v-if="auth.authUser?.role === 'user' && !route.path.startsWith('/u')"
+        >
+          <span> Create Post </span>
+          <Plus class="text-xs mb-0.5" />
+        </Button>
+      </NuxtLink>
 
       <Input
         type="text"
         placeholder="Search posts..."
         class="focus-ring-1!"
-        v-if="auth.user?.role === 'user' && !route.path.startsWith('/u')"
+        v-if="auth.authUser?.role === 'user' && !route.path.startsWith('/u')"
       />
 
       <ModeToggle
@@ -84,8 +86,8 @@
             class="cursor-pointer hover:brightness-75 bg-foreground flex justify-center items-center"
           >
             <AvatarImage v-if="auth.user?.image" src="" />
-            <span v-if="!auth.user?.image" class="text-background font-medium">
-              {{ auth.user?.name?.[0] }}
+            <span class="text-background font-medium">
+              {{ auth.authUser?.name?.[0] }}
             </span>
           </Avatar>
         </DropdownMenuTrigger>
@@ -94,7 +96,7 @@
           <DropdownMenuLabel>
             Welcome
             <span class="font-medium dark:text-blue-400 text-blue-600">
-              {{ auth.user?.name?.split(" ")[0] }}
+              {{ auth.authUser?.name?.split(" ")[0] }}
             </span>
           </DropdownMenuLabel>
 
@@ -102,7 +104,7 @@
 
           <DropdownMenuGroup>
             <DropdownMenuItem
-              @click="() => navigateTo(`/profile/${auth.user?.id}`)"
+              @click="() => navigateTo(`/profile/${auth.authUser?.email}`)"
             >
               My Account
             </DropdownMenuItem>

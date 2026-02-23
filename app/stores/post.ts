@@ -164,10 +164,14 @@ export const usePostStore = defineStore("post", {
       try {
         const res = await $fetch<MyPosts>(`/api/users/me/posts`);
 
-        this.authorEmail = res.data.author;
-        this.count = res.data.count;
-        this.posts = res.data.posts as Post[];
-      } catch (error) {}
+        this.authorEmail = res.author;
+        this.count = res.count;
+        this.posts = res.data as Post[];
+      } catch (error) {
+        this.setError(error);
+      } finally {
+        this.setLoading(false);
+      }
     },
   },
 });
