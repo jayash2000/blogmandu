@@ -71,13 +71,14 @@
         v-if="route.path !== '/login' && route.path !== '/register'"
       />
 
-      <Button
-        v-if="!auth.isAuthenticated"
-        class="cursor-pointer dark:hover:opacity-75 hover:bg-blue-600"
-        @click="() => navigateTo('/login')"
-      >
-        Login
-      </Button>
+      <NuxtLink to="/login">
+        <Button
+          v-if="!auth.isAuthenticated"
+          class="cursor-pointer dark:hover:opacity-75 hover:bg-blue-600"
+        >
+          Login
+        </Button>
+      </NuxtLink>
 
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
@@ -103,25 +104,13 @@
           <Separator class="my-1" />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              @click="() => navigateTo(`/profile/${auth.authUser?.email}`)"
-            >
-              My Account
-            </DropdownMenuItem>
+            <NuxtLink :to="`/profile/${auth.authUser?.email}`">
+              <DropdownMenuItem> My Account </DropdownMenuItem>
+            </NuxtLink>
 
-            <DropdownMenuItem
-              @click="
-                () =>
-                  navigateTo('/u/dashboard', {
-                    external: true,
-                    open: {
-                      target: '_blank',
-                    },
-                  })
-              "
-            >
-              Author Console
-            </DropdownMenuItem>
+            <NuxtLink to="/u/dashboard" target="_blank">
+              <DropdownMenuItem> Author Console </DropdownMenuItem>
+            </NuxtLink>
 
             <DropdownMenuItem @click="handleLogout">Logout</DropdownMenuItem>
           </DropdownMenuGroup>

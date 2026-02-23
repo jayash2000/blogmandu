@@ -28,12 +28,14 @@
           Follow
         </Button>
 
-        <Button
-          v-if="auth.isAuthenticated && user?.email === auth.authUser?.email"
-          variant="outline"
-        >
-          Edit Profile
-        </Button>
+        <NuxtLink to="/u/dashboard/edit-profile" target="_blank">
+          <Button
+            v-if="auth.isAuthenticated && user?.email === auth.authUser?.email"
+            variant="outline"
+          >
+            Edit Profile
+          </Button>
+        </NuxtLink>
       </section>
 
       <ul class="flex items-center gap-4 pt-4">
